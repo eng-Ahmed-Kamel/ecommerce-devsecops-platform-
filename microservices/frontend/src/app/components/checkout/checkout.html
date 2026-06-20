@@ -1,0 +1,289 @@
+<div class="checkout-page">
+  <div class="checkout-header">
+    <a class="brand" routerLink="/Master">Roselle</a>
+    <div class="steps-bar">
+      <div class="step" [class.active]="step >= 1" [class.done]="step > 1">
+        <span class="step-num">1</span><span class="step-label">Information</span>
+      </div>
+      <div class="step-line" [class.done]="step > 1"></div>
+      <div class="step" [class.active]="step >= 2" [class.done]="step > 2">
+        <span class="step-num">2</span><span class="step-label">Payment</span>
+      </div>
+      <div class="step-line" [class.done]="step > 2"></div>
+      <div class="step" [class.active]="step >= 3">
+        <span class="step-num">3</span><span class="step-label">Review</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="checkout-body">
+    <!-- LEFT PANEL -->
+    <div class="checkout-left">
+      <!-- STEP 1: Info -->
+      <div *ngIf="step === 1">
+        <h2 class="section-title">Delivery Information</h2>
+
+        <div class="guest-toggle">
+          <button [class.active]="!isGuest" (click)="isGuest = false">Sign In / Account</button>
+          <button [class.active]="isGuest" (click)="isGuest = true">Guest Checkout</button>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>First Name</label>
+            <input type="text" [(ngModel)]="firstName" placeholder="Sara" />
+          </div>
+          <div class="field">
+            <label>Last Name</label>
+            <input type="text" [(ngModel)]="lastName" placeholder="Ahmed" />
+          </div>
+          <div class="field full">
+            <label>Email</label>
+            <input type="email" [(ngModel)]="email" placeholder="sara@example.com" />
+          </div>
+          <div class="field">
+            <label>Phone</label>
+            <input type="tel" [(ngModel)]="phone" placeholder="+20 1XX XXX XXXX" />
+          </div>
+          <div class="field full">
+            <label>Street Address</label>
+            <input type="text" [(ngModel)]="address" placeholder="123 Tahrir St." />
+          </div>
+          <div class="field">
+            <label>City</label>
+            <input type="text" [(ngModel)]="city" placeholder="Cairo" />
+          </div>
+          <div class="field">
+            <label>Governorate</label>
+            <select [(ngModel)]="governorate">
+              <option value="">Select...</option>
+              <option>Cairo</option>
+              <option>Alexandria</option>
+              <option>Giza</option>
+              <option>Luxor</option>
+              <option>Aswan</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn-next" (click)="nextStep()">Continue to Payment →</button>
+        <a routerLink="/cart" class="btn-back">← Return to Cart</a>
+      </div>
+
+      <!-- STEP 2: Payment -->
+      <div *ngIf="step === 2">
+        <h2 class="section-title">Payment Method</h2>
+
+        <div class="payment-options">
+          <label class="payment-opt" [class.selected]="paymentMethod === 'credit'">
+            <input type="radio" [(ngModel)]="paymentMethod" value="credit" />
+            <i class="bi bi-credit-card-2-front"></i>
+            <span>Credit / Debit Card</span>
+          </label>
+          <label class="payment-opt" [class.selected]="paymentMethod === 'paypal'">
+            <input type="radio" [(ngModel)]="paymentMethod" value="paypal" />
+            <i class="bi bi-paypal"></i>
+            <span>PayPal</span>
+          </label>
+          <label class="payment-opt" [class.selected]="paymentMethod === 'wallet'">
+            <input type="radio" [(ngModel)]="paymentMethod" value="wallet" />
+            <i class="bi bi-wallet2"></i>
+            <span>Digital Wallet</span>
+          </label>
+          <label class="payment-opt" [class.selected]="paymentMethod === 'cod'">
+            <input type="radio" [(ngModel)]="paymentMethod" value="cod" />
+            <i class="bi bi-cash-coin"></i>
+            <span>Cash on Delivery</span>
+          </label>
+        </div>
+
+        <div class="card-form" *ngIf="paymentMethod === 'credit'">
+          <div class="field full">
+            <label>Card Number</label>
+            <input
+              type="text"
+              [(ngModel)]="cardNumber"
+              placeholder="1234 5678 9012 3456"
+              maxlength="19"
+            />
+          </div>
+          <div class="field full">
+            <label>Cardholder Name</label>
+            <input type="text" [(ngModel)]="cardName" placeholder="Sara Ahmed" />
+          </div>
+          <div class="field">
+            <label>Expiry</label>
+            <input type="text" [(ngModel)]="cardExpiry" placeholder="MM/YY" maxlength="5" />
+          </div>
+          <div class="field">
+            <label>CVV</label>
+            <input type="password" [(ngModel)]="cardCvv" placeholder="•••" maxlength="4" />
+          </div>
+        </div>
+
+        <div class="paypal-note" *ngIf="paymentMethod === 'paypal'">
+          <i class="bi bi-info-circle"></i>
+          You'll be redirected to PayPal to complete your payment securely.
+        </div>
+        <div class="paypal-note" *ngIf="paymentMethod === 'wallet'">
+          <i class="bi bi-info-circle"></i>
+          Fawry, Vodafone Cash, and other digital wallets accepted.
+        </div>
+        <div class="paypal-note" *ngIf="paymentMethod === 'cod'">
+          <i class="bi bi-info-circle"></i>
+          Pay in cash when your order is delivered. Additional 20 EGP COD fee applies.
+        </div>
+
+        <div class="promo-section">
+          <label class="promo-label">Promo Code</label>
+
+          <div class="promo-row" *ngIf="!promoApplied">
+            <input
+              type="text"
+              [(ngModel)]="promoCode"
+              placeholder="e.g. SAVE15"
+              class="promo-input"
+              [disabled]="promoLoading"
+              (keyup.enter)="applyPromo()"
+            />
+            <button
+              class="btn-promo"
+              (click)="applyPromo()"
+              [disabled]="!promoCode || promoLoading"
+            >
+              <span *ngIf="promoLoading" class="promo-spinner"></span>
+              <span *ngIf="!promoLoading">Apply</span>
+            </button>
+          </div>
+
+          <!-- Error -->
+          <p class="promo-error" *ngIf="promoError">
+            <i class="bi bi-x-circle-fill"></i> {{ promoError }}
+          </p>
+
+          <!-- Success banner -->
+          <div class="promo-success-banner" *ngIf="promoApplied">
+            <div class="promo-success-left">
+              <i class="bi bi-tag-fill promo-icon"></i>
+              <div>
+                <p class="promo-success-title">
+                  Code <strong>{{ promoCode.toUpperCase() }}</strong> applied!
+                </p>
+                <p class="promo-success-sub">
+                  You saved {{ promoDiscount | currency: 'EGP' : 'symbol' : '1.0-0' }} on this order
+                </p>
+              </div>
+            </div>
+            <button class="btn-remove-promo" (click)="removePromo()">
+              <i class="bi bi-x"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="step-btns">
+          <button class="btn-back-step" (click)="prevStep()">← Back</button>
+          <button class="btn-next" (click)="nextStep()">Review Order →</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Review -->
+      <div *ngIf="step === 3">
+        <h2 class="section-title">Review Your Order</h2>
+
+        <div class="review-section">
+          <h3>Delivery To</h3>
+          <p>{{ firstName }} {{ lastName }}</p>
+          <p>{{ address }}, {{ city }}, {{ governorate }}</p>
+          <p>{{ phone }} · {{ email }}</p>
+        </div>
+
+        <div class="review-section">
+          <h3>Payment</h3>
+          <p *ngIf="paymentMethod === 'credit'">
+            Credit Card ending in {{ cardNumber.slice(-4) || '****' }}
+          </p>
+          <p *ngIf="paymentMethod === 'paypal'">PayPal</p>
+          <p *ngIf="paymentMethod === 'wallet'">Digital Wallet</p>
+          <p *ngIf="paymentMethod === 'cod'">Cash on Delivery</p>
+        </div>
+
+        <div class="review-items">
+          <div *ngFor="let item of cartItems" class="review-item">
+            <img [src]="item.imgUrl" [alt]="item.name" />
+            <div class="review-item-info">
+              <span class="review-item-name">{{ item.name }}</span>
+              <span class="review-item-qty">Qty: {{ item.cartQuantity }}</span>
+            </div>
+            <span class="review-item-price">{{
+              item.price * item.cartQuantity | currency: 'EGP' : 'symbol' : '1.0-0'
+            }}</span>
+          </div>
+        </div>
+
+        <!-- Payment error banner (only shows on failure) -->
+        <p *ngIf="paymentError" class="payment-error-msg">
+          <i class="bi bi-exclamation-triangle-fill"></i> {{ paymentError }}
+        </p>
+
+        <div class="step-btns">
+          <button class="btn-back-step" (click)="prevStep()" [disabled]="isProcessing">
+            ← Back
+          </button>
+          <button class="btn-place" (click)="placeOrder()" [disabled]="isProcessing">
+            <ng-container *ngIf="!isProcessing">
+              <i class="bi bi-bag-check me-2"></i>Place Order
+            </ng-container>
+            <ng-container *ngIf="isProcessing">
+              <span class="pay-spinner"></span> Processing…
+            </ng-container>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Summary -->
+    <div class="checkout-right">
+      <div class="summary-card">
+        <h3>Order Summary</h3>
+        <div class="summary-items">
+          <div *ngFor="let item of cartItems" class="summary-item">
+            <div class="summary-item-img">
+              <img [src]="item.imgUrl" [alt]="item.name" />
+              <span class="qty-badge">{{ item.cartQuantity }}</span>
+            </div>
+            <span class="summary-item-name">{{ item.name }}</span>
+            <span class="summary-item-price">{{
+              item.price * item.cartQuantity | currency: 'EGP' : 'symbol' : '1.0-0'
+            }}</span>
+          </div>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span>{{ subtotal | currency: 'EGP' : 'symbol' : '1.0-0' }}</span>
+        </div>
+        <div class="summary-row">
+          <span>Shipping</span>
+          <span [class.free]="shipping === 0">{{
+            shipping === 0 ? 'Free' : (shipping | currency: 'EGP' : 'symbol' : '1.0-0')
+          }}</span>
+        </div>
+        <div class="summary-row discount" *ngIf="promoApplied">
+          <span>Discount</span>
+          <span>- {{ discount | currency: 'EGP' : 'symbol' : '1.0-0' }}</span>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-row total">
+          <span>Total</span>
+          <span>{{ total | currency: 'EGP' : 'symbol' : '1.0-0' }}</span>
+        </div>
+        <div class="trust-strip">
+          <span><i class="bi bi-shield-lock"></i> Secure Checkout</span>
+          <span><i class="bi bi-truck"></i> Fast Delivery</span>
+          <span><i class="bi bi-arrow-return-left"></i> 14-day Returns</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

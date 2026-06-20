@@ -1,0 +1,28 @@
+# Git
+.git
+.gitignore
+
+# Node modules (will be installed in container)
+node_modules
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Build outputs (will be generated in container)
+dist
+
+# Tests
+coverage
+*.spec.ts
+
+# CI/CD
+.github
+
+# Misc
+README.md
+Dockerfile*
+docker-compose*
+*.md

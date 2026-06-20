@@ -1,0 +1,146 @@
+<div class="history-page">
+
+  <header class="page-header">
+    <div class="container">
+      <span class="eyebrow">Your Account</span>
+      <h1>Order History</h1>
+      <div class="ornament">
+        <div class="orn-line"></div><div class="orn-diamond"></div><div class="orn-line"></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container page-body">
+
+    <!-- Empty state -->
+    <div *ngIf="orders.length === 0" class="empty-state">
+      <i class="bi bi-bag-x empty-icon"></i>
+      <h2>No orders yet</h2>
+      <p>Your completed orders will appear here once you make a purchase.</p>
+      <a routerLink="/Master" class="btn-shop">
+        <i class="bi bi-bag me-2"></i>Start Shopping
+      </a>
+    </div>
+
+    <!-- Orders list -->
+    <div *ngIf="orders.length > 0">
+      <p class="orders-count">{{ orders.length }} order{{ orders.length > 1 ? 's' : '' }} placed</p>
+
+      <div class="orders-list">
+        <div *ngFor="let order of orders" class="order-card">
+
+          <!-- ── Order Header (always visible) ── -->
+          <div class="order-head" (click)="toggle(order.id)">
+            <div class="order-head-left">
+              <div class="order-id-row">
+                <span class="order-num">{{ order.id }}</span>
+                <span class="status-badge" [style.background]="getStatusColor(order.status) + '22'"
+                      [style.color]="getStatusColor(order.status)"
+                      [style.border-color]="getStatusColor(order.status) + '55'">
+                  {{ order.status }}
+                </span>
+              </div>
+              <span class="order-date">{{ order.date }}</span>
+            </div>
+
+            <div class="order-head-center">
+              <!-- Mini item images -->
+              <div class="mini-items">
+                <img *ngFor="let item of order.items | slice:0:3"
+                     [src]="item.imgUrl" [alt]="item.name" class="mini-img" />
+                <span *ngIf="order.items.length > 3" class="more-badge">+{{ order.items.length - 3 }}</span>
+              </div>
+            </div>
+
+            <div class="order-head-right">
+              <span class="order-total">{{ order.total | currency:'EGP':'symbol':'1.0-0' }}</span>
+              <span class="order-payment">
+                <i class="bi" [class]="getPaymentIcon(order.paymentMethod)"></i>
+                {{ order.paymentMethod }}
+              </span>
+            </div>
+
+            <button class="expand-btn" [class.open]="expandedOrderId === order.id">
+              <i class="bi bi-chevron-down"></i>
+            </button>
+          </div>
+
+          <!-- ── Tracking mini-bar ── -->
+          <div class="mini-tracker">
+            <div *ngFor="let s of statusSteps; let i = index"
+                 class="mini-step"
+                 [class.done]="i <= getStatusStep(order.status)"
+                 [class.active]="i === getStatusStep(order.status)">
+              <div class="mini-dot"></div>
+              <span class="mini-label">{{ s }}</span>
+              <div class="mini-line" *ngIf="i < statusSteps.length - 1"
+                   [class.done]="i < getStatusStep(order.status)"></div>
+            </div>
+          </div>
+
+          <!-- ── Expanded Details ── -->
+          <div class="order-details" [class.open]="expandedOrderId === order.id">
+            <div class="details-inner">
+
+              <!-- Items -->
+              <div class="detail-section">
+                <h3>Items</h3>
+                <div class="detail-items">
+                  <div *ngFor="let item of order.items" class="detail-item">
+                    <img [src]="item.imgUrl" [alt]="item.name" />
+                    <div class="detail-item-info">
+                      <span class="detail-item-name">{{ item.name }}</span>
+                      <span class="detail-item-qty">Qty: {{ item.cartQuantity }}</span>
+                    </div>
+                    <span class="detail-item-price">{{ item.price * item.cartQuantity | currency:'EGP':'symbol':'1.0-0' }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Price breakdown -->
+              <div class="detail-section">
+                <h3>Price Summary</h3>
+                <div class="price-lines">
+                  <div class="price-line">
+                    <span>Subtotal</span>
+                    <span>{{ order.subtotal | currency:'EGP':'symbol':'1.0-0' }}</span>
+                  </div>
+                  <div class="price-line">
+                    <span>Shipping</span>
+                    <span [class.free]="order.shipping === 0">{{ order.shipping === 0 ? 'FREE' : (order.shipping | currency:'EGP':'symbol':'1.0-0') }}</span>
+                  </div>
+                  <div class="price-line discount" *ngIf="order.discount > 0">
+                    <span>Discount <span class="promo-tag" *ngIf="order.promoCode">{{ order.promoCode }}</span></span>
+                    <span>− {{ order.discount | currency:'EGP':'symbol':'1.0-0' }}</span>
+                  </div>
+                  <div class="price-divider"></div>
+                  <div class="price-line total">
+                    <span>Total</span>
+                    <span>{{ order.total | currency:'EGP':'symbol':'1.0-0' }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Delivery -->
+              <div class="detail-section">
+                <h3>Delivery</h3>
+                <p class="detail-address">{{ order.address }}</p>
+                <p class="detail-name" *ngIf="order.customerName">{{ order.customerName }}</p>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Back link -->
+      <div class="back-row">
+        <a routerLink="/Master" class="btn-back">
+          <i class="bi bi-arrow-left me-2"></i>Continue Shopping
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>

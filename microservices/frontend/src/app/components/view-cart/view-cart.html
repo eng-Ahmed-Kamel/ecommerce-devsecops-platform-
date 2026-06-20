@@ -1,0 +1,353 @@
+<!-- <div class="cart-page">
+
+  <header class="cart-header">
+    <div class="container-xxl px-4 px-md-5">
+      <span class="cart-eyebrow">Your Selection</span>
+      <h1 class="cart-title">Shopping Bag</h1>
+      <div class="ornament">
+        <div class="orn-line"></div>
+        <div class="orn-diamond"></div>
+        <div class="orn-line"></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container-xxl px-4 px-md-5 cart-body">
+
+    <div *ngIf="cartItems.length === 0" class="empty-state">
+      <div class="empty-icon">
+        <i class="fas fa-bag-shopping"></i>
+      </div>
+      <h2 class="empty-title">Your bag is empty.</h2>
+      <p class="empty-body">
+        Discover our curated collection and add pieces that speak to you.
+      </p>
+      <a routerLink="/Master" class="btn-rsl btn-rsl--primary mt-3 d-inline-flex">
+        <i class="fas fa-arrow-left me-2"></i> Continue Shopping
+      </a>
+    </div>
+
+    <div *ngIf="cartItems.length > 0" class="row g-5 align-items-start">
+
+      <div class="col-lg-8">
+
+        <div class="cart-col-labels d-none d-md-grid">
+          <span>Product</span>
+          <span class="text-center">Quantity</span>
+          <span class="text-end">Total</span>
+        </div>
+        <div class="cart-divider mb-0"></div>
+
+        <div class="cart-items-list">
+          <div
+            *ngFor="let item of cartItems"
+            class="cart-item"
+          >
+          
+            <div class="cart-item__img-wrap">
+              <img [src]="item.imgUrl" [alt]="item.name" class="cart-item__img" />
+            </div>
+
+            
+            <div class="cart-item__info">
+              <span class="cart-item__category">Category #{{ item.categoryId }}</span>
+              <a [routerLink]="['/Details', item.id]" class="cart-item__name">
+                {{ item.name }}
+              </a>
+              <span class="cart-item__unit-price">
+                {{ item.price | currency:'EGP':'symbol':'1.0-0' }} each
+              </span>
+              
+              <button class="cart-item__remove-mobile" (click)="remove(item.id)">
+                Remove
+              </button>
+            </div>
+
+           
+            <div class="cart-item__qty">
+              <button class="qty-btn" (click)="decrement(item.id)" [disabled]="item.cartQuantity <= 1">−</button>
+              <span class="qty-val">{{ item.cartQuantity }}</span>
+              <button class="qty-btn" (click)="increment(item.id)" [disabled]="item.cartQuantity >= item.quantity">+</button>
+            </div>
+
+            <div class="cart-item__total">
+              {{ item.price * item.cartQuantity | currency:'EGP':'symbol':'1.0-0' }}
+            </div>
+
+           
+            <button class="cart-item__remove d-none d-md-flex" (click)="remove(item.id)" aria-label="Remove item">
+              <i class="fas fa-xmark"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="cart-actions">
+          <a routerLink="/Master" class="btn-rsl btn-rsl--ghost">
+            <i class="fas fa-arrow-left me-2"></i> Continue Shopping
+          </a>
+          <button class="btn-rsl btn-rsl--danger" (click)="clearCart()">
+            <i class="fas fa-trash-can me-2"></i> Clear Bag
+          </button>
+        </div>
+      </div>
+
+     
+      <div class="col-lg-4">
+        <div class="summary-card">
+
+          <h2 class="summary-title">Order Summary</h2>
+          <div class="cart-divider"></div>
+
+          <div class="summary-lines">
+            <div *ngFor="let item of cartItems" class="summary-line">
+              <span class="summary-line__name">{{ item.name }} <em>× {{ item.cartQuantity }}</em></span>
+              <span class="summary-line__price">{{ item.price * item.cartQuantity | currency:'EGP':'symbol':'1.0-0' }}</span>
+            </div>
+          </div>
+
+          <div class="cart-divider"></div>
+
+       
+          <div class="summary-row">
+            <span class="summary-row__label">Subtotal</span>
+            <span class="summary-row__value">{{ grandTotal | currency:'EGP':'symbol':'1.0-0' }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-row__label">Shipping</span>
+            <span class="summary-row__value" [class.free]="grandTotal >= 1000">
+              {{ grandTotal >= 1000 ? 'Free' : (80 | currency:'EGP':'symbol':'1.0-0') }}
+            </span>
+          </div>
+
+          <div class="cart-divider"></div>
+
+          <div class="summary-row summary-row--total">
+            <span>Total</span>
+            <span>{{ (grandTotal >= 1000 ? grandTotal : grandTotal + 80) | currency:'EGP':'symbol':'1.0-0' }}</span>
+          </div>
+
+          <p class="shipping-notice" *ngIf="grandTotal < 1000">
+            Add {{ 1000 - grandTotal | currency:'EGP':'symbol':'1.0-0' }} more for free shipping.
+          </p>
+          <p class="shipping-notice free-notice" *ngIf="grandTotal >= 1000">
+            ✦ You qualify for free shipping!
+          </p>
+
+          <div class="signin-notice" *ngIf="!isLoggedIn">
+            <i class="bi bi-person-lock"></i>
+            <span>Please <a routerLink="/login" [queryParams]="{returnUrl:'/checkout'}">sign in</a> to complete your purchase</span>
+          </div>
+
+          <button
+            class="btn-rsl btn-rsl--primary btn-checkout"
+            (click)="proceedToCheckout()"
+            style="width:100%; border:none; cursor:pointer;"
+          >
+            <i class="bi bi-lock me-2" style="font-size:11px;"></i>
+            {{ isLoggedIn ? 'Proceed to Checkout' : 'Sign In to Checkout' }}
+          </button>
+
+          <div class="trust-strip">
+            <span><i class="fas fa-shield-halved"></i> Secure Payment</span>
+            <span><i class="fas fa-rotate-left"></i> 14-day Returns</span>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div> -->
+<div class="cart-page">
+  <!-- ── PAGE HEADER ── -->
+  <header class="cart-header">
+    <div class="container-xxl px-4 px-md-5">
+      <span class="cart-eyebrow">Your Selection</span>
+      <h1 class="cart-title">Shopping Bag</h1>
+      <div class="ornament">
+        <div class="orn-line"></div>
+        <div class="orn-diamond"></div>
+        <div class="orn-line"></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container-xxl px-4 px-md-5 cart-body">
+    <!-- ══════════════════════════════════
+         EMPTY CART STATE
+    ══════════════════════════════════════ -->
+    <div *ngIf="cartItems.length === 0" class="empty-state">
+      <div class="empty-icon">
+        <i class="fas fa-bag-shopping"></i>
+      </div>
+      <h2 class="empty-title">Your bag is empty.</h2>
+      <p class="empty-body">Discover our curated collection and add pieces that speak to you.</p>
+      <a routerLink="/Master" class="btn-rsl btn-rsl--primary mt-3 d-inline-flex">
+        <i class="fas fa-arrow-left me-2"></i> Continue Shopping
+      </a>
+    </div>
+
+    <!-- ══════════════════════════════════
+         CART WITH ITEMS
+    ══════════════════════════════════════ -->
+    <div *ngIf="cartItems.length > 0" class="row g-5 align-items-start">
+      <!-- ── LEFT: ITEMS LIST ── -->
+      <div class="col-lg-8">
+        <!-- Column labels -->
+        <div class="cart-col-labels d-none d-md-grid">
+          <span>Product</span>
+          <span class="text-center">Quantity</span>
+          <span class="text-end">Total</span>
+        </div>
+        <div class="cart-divider mb-0"></div>
+
+        <!-- Items -->
+        <div class="cart-items-list">
+          <div *ngFor="let item of cartItems" class="cart-item">
+            <!-- Product Image -->
+            <div class="cart-item__img-wrap">
+              <img [src]="item.imgUrl" [alt]="item.name" class="cart-item__img" />
+            </div>
+
+            <!-- Product Info -->
+            <div class="cart-item__info">
+              <span class="cart-item__category">Category #{{ item.categoryId }}</span>
+              <a [routerLink]="['/Details', item._id]" class="cart-item__name">
+                {{ item.name }}
+              </a>
+              <span class="cart-item__unit-price">
+                {{ item.price | currency: 'EGP' : 'symbol' : '1.0-0' }} each
+              </span>
+              <!-- Mobile remove -->
+              <button class="cart-item__remove-mobile" (click)="remove(item._id)">Remove</button>
+            </div>
+
+            <!-- Quantity Stepper -->
+            <div class="cart-item__qty">
+              <button
+                class="qty-btn"
+                (click)="decrement(item._id)"
+                [disabled]="item.cartQuantity <= 1"
+              >
+                −
+              </button>
+              <span class="qty-val">{{ item.cartQuantity }}</span>
+              <button
+                class="qty-btn"
+                (click)="increment(item._id)"
+                [disabled]="item.cartQuantity >= item.quantity"
+              >
+                +
+              </button>
+            </div>
+
+            <!-- Line Total -->
+            <div class="cart-item__total">
+              {{ item.price * item.cartQuantity | currency: 'EGP' : 'symbol' : '1.0-0' }}
+            </div>
+
+            <!-- Remove button (desktop) -->
+            <button
+              class="cart-item__remove d-none d-md-flex"
+              (click)="remove(item._id)"
+              aria-label="Remove item"
+            >
+              <i class="fas fa-xmark"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Cart actions -->
+        <div class="cart-actions">
+          <a routerLink="/Master" class="btn-rsl btn-rsl--ghost">
+            <i class="fas fa-arrow-left me-2"></i> Continue Shopping
+          </a>
+          <button class="btn-rsl btn-rsl--danger" (click)="clearCart()">
+            <i class="fas fa-trash-can me-2"></i> Clear Bag
+          </button>
+        </div>
+      </div>
+
+      <!-- ── RIGHT: ORDER SUMMARY ── -->
+      <div class="col-lg-4">
+        <div class="summary-card">
+          <h2 class="summary-title">Order Summary</h2>
+          <div class="cart-divider"></div>
+
+          <!-- Line items summary -->
+          <div class="summary-lines">
+            <div *ngFor="let item of cartItems" class="summary-line">
+              <span class="summary-line__name"
+                >{{ item.name }} <em>× {{ item.cartQuantity }}</em></span
+              >
+              <span class="summary-line__price">{{
+                item.price * item.cartQuantity | currency: 'EGP' : 'symbol' : '1.0-0'
+              }}</span>
+            </div>
+          </div>
+
+          <div class="cart-divider"></div>
+
+          <!-- Totals -->
+          <div class="summary-row">
+            <span class="summary-row__label">Subtotal</span>
+            <span class="summary-row__value">{{
+              grandTotal | currency: 'EGP' : 'symbol' : '1.0-0'
+            }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-row__label">Shipping</span>
+            <span class="summary-row__value" [class.free]="grandTotal >= 1000">
+              {{ grandTotal >= 1000 ? 'Free' : (80 | currency: 'EGP' : 'symbol' : '1.0-0') }}
+            </span>
+          </div>
+
+          <div class="cart-divider"></div>
+
+          <div class="summary-row summary-row--total">
+            <span>Total</span>
+            <span>{{
+              (grandTotal >= 1000 ? grandTotal : grandTotal + 80)
+                | currency: 'EGP' : 'symbol' : '1.0-0'
+            }}</span>
+          </div>
+
+          <!-- Shipping notice -->
+          <p class="shipping-notice" *ngIf="grandTotal < 1000">
+            Add {{ 1000 - grandTotal | currency: 'EGP' : 'symbol' : '1.0-0' }} more for free
+            shipping.
+          </p>
+          <p class="shipping-notice free-notice" *ngIf="grandTotal >= 1000">
+            ✦ You qualify for free shipping!
+          </p>
+
+          <!-- Sign-in notice (shown only when guest) -->
+          <div class="signin-notice" *ngIf="!isLoggedIn">
+            <i class="bi bi-person-lock"></i>
+            <span
+              >Please
+              <a routerLink="/login" [queryParams]="{ returnUrl: '/checkout' }">sign in</a> to
+              complete your purchase</span
+            >
+          </div>
+
+          <!-- Checkout CTA -->
+          <button
+            class="btn-rsl btn-rsl--primary btn-checkout"
+            (click)="proceedToCheckout()"
+            style="width: 100%; border: none; cursor: pointer"
+          >
+            <i class="bi bi-lock me-2" style="font-size: 11px"></i>
+            {{ isLoggedIn ? 'Proceed to Checkout' : 'Sign In to Checkout' }}
+          </button>
+
+          <!-- Trust signals -->
+          <div class="trust-strip">
+            <span><i class="fas fa-shield-halved"></i> Secure Payment</span>
+            <span><i class="fas fa-rotate-left"></i> 14-day Returns</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

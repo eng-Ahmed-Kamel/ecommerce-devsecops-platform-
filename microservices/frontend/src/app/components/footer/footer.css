@@ -1,0 +1,81 @@
+/* ===================== Roselle Footer ===================== */
+
+footer {
+  background-color: #3b2f2f !important; /* deep luxury brown */
+  color: #d6c7bf !important;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
+}
+
+/* Top Social Section */
+footer section.border-bottom {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Brand Name */
+footer h6 {
+  color: #D4AF7A;
+  letter-spacing: 2px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* Company Description */
+footer p {
+  color: #c9b8af;
+  line-height: 1.7;
+}
+
+/* Links */
+footer a {
+  text-decoration: none;
+  color: #c9b8af !important;
+  transition: all 0.3s ease;
+  font-size: 0.85rem;
+}
+
+footer a:hover {
+  color: #D4AF7A !important;
+  padding-left: 3px;
+}
+
+/* Social Icons */
+footer .fab {
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+footer .fab:hover {
+  color: #D4AF7A !important;
+  transform: translateY(-2px);
+}
+
+/* Icons (contact) */
+footer .fas {
+  color: #D4AF7A;
+}
+
+/* Spacing improvement */
+footer .container {
+  padding-bottom: 30px;
+}
+
+/* Footer bottom bar (optional if you add copyright) */
+.footer-bottom {
+  background: #2b2121;
+  color: #a89080;
+  text-align: center;
+  padding: 12px 0;
+  font-size: 0.8rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  footer {
+    text-align: center;
+  }
+
+  footer .row > div {
+    margin-bottom: 20px;
+  }
+}

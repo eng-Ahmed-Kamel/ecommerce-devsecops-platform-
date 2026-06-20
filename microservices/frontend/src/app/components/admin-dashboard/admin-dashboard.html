@@ -1,0 +1,1038 @@
+<!-- <div class="admin-page">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">Roselle <span>Admin</span></div>
+    <nav class="sidebar-nav">
+      <button [class.active]="activeTab==='products'" (click)="activeTab='products'">
+        <i class="bi bi-box-seam"></i> Products
+      </button>
+      <button [class.active]="activeTab==='users'" (click)="activeTab='users'">
+        <i class="bi bi-people"></i> Users
+        <span class="badge" *ngIf="stats.restrictedUsers">{{ stats.restrictedUsers }}</span>
+      </button>
+      <button [class.active]="activeTab==='orders'" (click)="activeTab='orders'">
+        <i class="bi bi-bag-check"></i> Orders
+        <span class="badge" *ngIf="orders.length">{{ orders.length }}</span>
+      </button>
+      <button [class.active]="activeTab==='promos'" (click)="activeTab='promos'">
+        <i class="bi bi-tag"></i> Promo Codes
+      </button>
+      <button [class.active]="activeTab==='content'" (click)="activeTab='content'">
+        <i class="bi bi-images"></i> Content
+      </button>
+      <button [class.active]="activeTab==='stats'" (click)="activeTab='stats'">
+        <i class="bi bi-bar-chart"></i> Analytics
+      </button>
+    </nav>
+    <button class="sidebar-logout" (click)="logout()">
+      <i class="bi bi-box-arrow-left"></i> Logout
+    </button>
+  </aside>
+
+
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <h1>
+        <span *ngIf="activeTab==='products'">Product Management</span>
+        <span *ngIf="activeTab==='users'">User Management</span>
+        <span *ngIf="activeTab==='orders'">Orders</span>
+        <span *ngIf="activeTab==='promos'">Promo Codes</span>
+        <span *ngIf="activeTab==='content'">Content Management</span>
+        <span *ngIf="activeTab==='stats'">Analytics</span>
+      </h1>
+      <a routerLink="/Master" class="btn-store"><i class="bi bi-shop"></i> View Store</a>
+    </div>
+
+
+    <div class="stats-grid">
+      <div class="stat-card"><i class="bi bi-box-seam"></i><div><span class="stat-val">{{ stats.totalProducts }}</span><span class="stat-label">Products</span></div></div>
+      <div class="stat-card"><i class="bi bi-people"></i><div><span class="stat-val">{{ stats.totalUsers }}</span><span class="stat-label">Users</span></div></div>
+      <div class="stat-card"><i class="bi bi-bag-check"></i><div><span class="stat-val">{{ stats.totalOrders }}</span><span class="stat-label">Orders</span></div></div>
+      <div class="stat-card"><i class="bi bi-currency-dollar"></i><div><span class="stat-val">{{ stats.totalRevenue | currency:'EGP':'symbol':'1.0-0' }}</span><span class="stat-label">Revenue</span></div></div>
+      <div class="stat-card warn"><i class="bi bi-exclamation-triangle"></i><div><span class="stat-val">{{ stats.lowStock }}</span><span class="stat-label">Low Stock</span></div></div>
+      <div class="stat-card warn"><i class="bi bi-person-x"></i><div><span class="stat-val">{{ stats.restrictedUsers }}</span><span class="stat-label">Restricted</span></div></div>
+    </div>
+
+
+    <div *ngIf="activeTab==='products'">
+      <div class="tab-toolbar">
+        <div class="search-wrap"><i class="bi bi-search"></i><input type="text" [(ngModel)]="searchTerm" placeholder="Search products..." /></div>
+        <button class="btn-add" (click)="openAdd()"><i class="bi bi-plus-lg"></i> Add Product</button>
+      </div>
+      <div class="products-table-wrap">
+        <table class="products-table">
+          <thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Featured</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let p of filteredProducts">
+              <td>
+                <div class="product-cell">
+                  <img [src]="p.imgUrl" [alt]="p.name" />
+                  <div><span class="product-name">{{ p.name }}</span><span class="product-desc">{{ p.description | slice:0:40 }}...</span></div>
+                </div>
+              </td>
+              <td><span class="cat-badge">{{ getCategoryName(p.categoryId) }}</span></td>
+              <td>{{ p.price | currency:'EGP':'symbol':'1.0-0' }}</td>
+              <td><span class="stock-badge" [class.low]="p.quantity <= 2">{{ p.quantity }} left</span></td>
+              <td>
+                <button class="btn-feature" [class.featured]="isFeatured(p.id)" (click)="toggleFeatured(p.id)" [title]="isFeatured(p.id) ? 'Remove from featured' : 'Add to featured'">
+                  <i [class]="isFeatured(p.id) ? 'bi bi-star-fill' : 'bi bi-star'"></i>
+                </button>
+              </td>
+              <td>
+                <div class="action-btns">
+                  <button class="btn-edit" (click)="openEdit(p)"><i class="bi bi-pencil"></i></button>
+                  <button class="btn-del" (click)="delete(p.id)"><i class="bi bi-trash3"></i></button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+
+    <div *ngIf="activeTab==='users'">
+      <div class="products-table-wrap">
+        <table class="products-table">
+          <thead><tr><th>User</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let u of users">
+              <td>
+                <div class="product-cell">
+                  <div class="user-icon-cell"><i class="bi bi-person-circle"></i></div>
+                  <div><span class="product-name">{{ u.name }}</span></div>
+                </div>
+              </td>
+              <td style="color:var(--muted); font-size:13px">{{ u.email }}</td>
+              <td><span class="cat-badge" [style.background]="u.role==='admin' ? '#b8965a' : '#e2d9d2'" [style.color]="u.role==='admin' ? '#fff' : 'var(--ink)'">{{ u.role }}</span></td>
+              <td>
+                <span class="stock-badge" [class.low]="u.status==='restricted'">
+                  {{ u.status }}
+                </span>
+              </td>
+              <td>
+                <button *ngIf="u.role !== 'admin'" class="btn-toggle-user" [class.restrict]="u.status==='active'" (click)="toggleUser(u.id)">
+                  <i [class]="u.status==='active' ? 'bi bi-slash-circle' : 'bi bi-check-circle'"></i>
+                  {{ u.status === 'active' ? 'Restrict' : 'Approve' }}
+                </button>
+                <span *ngIf="u.role==='admin'" style="color:var(--muted); font-size:12px">—</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+
+    <div *ngIf="activeTab==='orders'">
+      <div *ngIf="orders.length === 0" class="empty-state"><i class="bi bi-bag-x"></i><p>No orders yet</p></div>
+      <div class="orders-list" *ngIf="orders.length > 0">
+        <div *ngFor="let o of orders" class="order-row">
+          <div class="order-row-id"><strong>{{ o.id }}</strong><span>{{ o.date }}</span></div>
+          <div class="order-row-info"><span>{{ o.customerName }}</span><span>{{ o.items.length }} item(s)</span><span>{{ o.paymentMethod }}</span></div>
+          <span class="status-badge">{{ o.status }}</span>
+          <span class="order-row-total">{{ o.total | currency:'EGP':'symbol':'1.0-0' }}</span>
+        </div>
+      </div>
+    </div>
+
+
+    <div *ngIf="activeTab==='promos'">
+      <div class="tab-toolbar">
+        <h3 style="margin:0; font-family:'Cormorant Garamond',serif; font-size:18px;">All Promo Codes</h3>
+        <button class="btn-add" (click)="openAddPromo()"><i class="bi bi-plus-lg"></i> Add Promo</button>
+      </div>
+      <div class="products-table-wrap">
+        <table class="products-table">
+          <thead><tr><th>Code</th><th>Type</th><th>Value</th><th>Status</th><th>Used</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let p of promoCodes">
+              <td><strong style="color:var(--ink);letter-spacing:0.05em">{{ p.code }}</strong></td>
+              <td><span class="cat-badge">{{ p.discountType === 'percent' ? 'Percentage' : 'Fixed EGP' }}</span></td>
+              <td style="color:var(--warm); font-weight:700">
+                {{ p.discountType === 'percent' ? p.discountValue + '%' : 'EGP ' + p.discountValue }}
+              </td>
+              <td>
+                <label class="toggle-switch">
+                  <input type="checkbox" [checked]="p.active" (change)="togglePromo(p.id, !p.active)" />
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="stock-badge" [class.low]="!p.active" style="margin-left:8px">{{ p.active ? 'Active' : 'Inactive' }}</span>
+              </td>
+              <td>{{ p.usageCount }}×</td>
+              <td>
+                <div class="action-btns">
+                  <button class="btn-edit" (click)="openEditPromo(p)"><i class="bi bi-pencil"></i></button>
+                  <button class="btn-del" (click)="deletePromo(p.id)"><i class="bi bi-trash3"></i></button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+
+    <div *ngIf="activeTab==='content'">
+
+      <div class="content-section">
+        <div class="tab-toolbar">
+          <h3 style="margin:0; font-family:'Cormorant Garamond',serif; font-size:18px;"><i class="bi bi-images"></i> Homepage Banners</h3>
+          <button class="btn-add" (click)="openAddBanner()"><i class="bi bi-plus-lg"></i> Add Banner</button>
+        </div>
+        <div class="banners-grid">
+          <div class="banner-card" *ngFor="let b of banners">
+            <img [src]="b.imageUrl" [alt]="b.title" />
+            <div class="bc-info">
+              <div class="bc-title">{{ b.title }}</div>
+              <div class="bc-sub">{{ b.subtitle }}</div>
+              <div class="bc-actions">
+                <label class="toggle-switch">
+                  <input type="checkbox" [checked]="b.active" (change)="toggleBanner(b.id, !b.active)" />
+                  <span class="toggle-slider"></span>
+                </label>
+                <button class="btn-edit" (click)="openEditBanner(b)"><i class="bi bi-pencil"></i></button>
+                <button class="btn-del" (click)="deleteBanner(b.id)"><i class="bi bi-trash3"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="content-section" style="margin-top:28px;">
+        <div class="tab-toolbar">
+          <h3 style="margin:0; font-family:'Cormorant Garamond',serif; font-size:18px;"><i class="bi bi-star"></i> Featured Products on Homepage</h3>
+        </div>
+        <div class="featured-select-grid">
+          <div class="fsg-card" *ngFor="let p of products" [class.selected]="isFeatured(p.id)" (click)="toggleFeatured(p.id)">
+            <img [src]="p.imgUrl" [alt]="p.name" />
+            <div class="fsg-name">{{ p.name }}</div>
+            <div class="fsg-check" *ngIf="isFeatured(p.id)"><i class="bi bi-star-fill"></i></div>
+          </div>
+        </div>
+        <p style="font-size:12px; color:var(--muted); margin-top:8px;">Click a product to toggle it as featured on the homepage.</p>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab==='stats'" class="analytics-placeholder">
+      <i class="bi bi-bar-chart-line"></i>
+      <h3>Analytics Dashboard</h3>
+      <div class="analytics-grid">
+        <div class="analytic-card"><span class="ac-val">{{ stats.totalProducts }}</span><span class="ac-lbl">Total Products</span></div>
+        <div class="analytic-card"><span class="ac-val">{{ stats.totalUsers }}</span><span class="ac-lbl">Registered Users</span></div>
+        <div class="analytic-card"><span class="ac-val">{{ stats.totalOrders }}</span><span class="ac-lbl">Total Orders</span></div>
+        <div class="analytic-card gold"><span class="ac-val">{{ stats.totalRevenue | currency:'EGP':'symbol':'1.0-0' }}</span><span class="ac-lbl">Total Revenue</span></div>
+        <div class="analytic-card warn"><span class="ac-val">{{ stats.lowStock }}</span><span class="ac-lbl">Low Stock Items</span></div>
+        <div class="analytic-card warn"><span class="ac-val">{{ stats.restrictedUsers }}</span><span class="ac-lbl">Restricted Users</span></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="modal-overlay" *ngIf="showModal" (click)="showModal=false">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <h2>{{ editingProduct ? 'Edit Product' : 'Add New Product' }}</h2>
+    <button class="modal-close" (click)="showModal=false"><i class="bi bi-x-lg"></i></button>
+    <div class="modal-form">
+      <div class="mfield"><label>Product Name</label><input type="text" [(ngModel)]="form.name" placeholder="e.g. Silk Evening Gown" /></div>
+      <div class="mrow">
+        <div class="mfield"><label>Price (EGP)</label><input type="number" [(ngModel)]="form.price" placeholder="0" /></div>
+        <div class="mfield"><label>Stock Qty</label><input type="number" [(ngModel)]="form.quantity" placeholder="1" /></div>
+      </div>
+      <div class="mfield"><label>Category</label>
+        <select [(ngModel)]="form.categoryId">
+          <option [value]="1">Suits</option><option [value]="2">Bags</option>
+          <option [value]="3">Shoes</option><option [value]="4">Coats</option><option [value]="5">Dresses</option>
+        </select>
+      </div>
+      <div class="mfield"><label>Image URL</label><input type="text" [(ngModel)]="form.imgUrl" placeholder="assets/images/img1.jpg" /></div>
+      <div class="mfield"><label>Description</label><textarea [(ngModel)]="form.description" rows="3"></textarea></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="showModal=false">Cancel</button>
+      <button class="btn-save" (click)="save()">{{ editingProduct ? 'Save Changes' : 'Add Product' }}</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showPromoModal" (click)="showPromoModal=false">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <h2>{{ editingPromo ? 'Edit Promo Code' : 'New Promo Code' }}</h2>
+    <button class="modal-close" (click)="showPromoModal=false"><i class="bi bi-x-lg"></i></button>
+    <div class="modal-form">
+      <div class="mfield"><label>Promo Code</label><input type="text" [(ngModel)]="promoForm.code" placeholder="e.g. SUMMER20" style="text-transform:uppercase" /></div>
+      <div class="mrow">
+        <div class="mfield"><label>Discount Type</label>
+          <select [(ngModel)]="promoForm.discountType">
+            <option value="percent">Percentage (%)</option>
+            <option value="fixed">Fixed Amount (EGP)</option>
+          </select>
+        </div>
+        <div class="mfield"><label>Value</label><input type="number" [(ngModel)]="promoForm.discountValue" placeholder="10" /></div>
+      </div>
+      <div class="mfield" style="flex-direction:row; align-items:center; gap:12px;">
+        <input type="checkbox" [(ngModel)]="promoForm.active" id="promoActive" />
+        <label for="promoActive" style="text-transform:none; font-size:14px; letter-spacing:0">Active</label>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="showPromoModal=false">Cancel</button>
+      <button class="btn-save" (click)="savePromo()">{{ editingPromo ? 'Save' : 'Add' }}</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal-overlay" *ngIf="showBannerModal" (click)="showBannerModal=false">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <h2>{{ editingBanner ? 'Edit Banner' : 'New Banner' }}</h2>
+    <button class="modal-close" (click)="showBannerModal=false"><i class="bi bi-x-lg"></i></button>
+    <div class="modal-form">
+      <div class="mfield"><label>Image URL</label><input type="text" [(ngModel)]="bannerForm.imageUrl" placeholder="assets/images/slider11.jpg" /></div>
+      <div class="mfield"><label>Title</label><input type="text" [(ngModel)]="bannerForm.title" placeholder="Banner headline" /></div>
+      <div class="mfield"><label>Subtitle</label><input type="text" [(ngModel)]="bannerForm.subtitle" placeholder="Short description" /></div>
+      <div class="mfield" style="flex-direction:row; align-items:center; gap:12px;">
+        <input type="checkbox" [(ngModel)]="bannerForm.active" id="bannerActive" />
+        <label for="bannerActive" style="text-transform:none; font-size:14px; letter-spacing:0">Show on homepage</label>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="showBannerModal=false">Cancel</button>
+      <button class="btn-save" (click)="saveBanner()">{{ editingBanner ? 'Save' : 'Add' }}</button>
+    </div>
+  </div>
+</div> -->
+<div class="admin-page">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">Roselle <span>Admin</span></div>
+    <nav class="sidebar-nav">
+      <button [class.active]="activeTab === 'products'" (click)="onTabChange('products')">
+        <i class="bi bi-box-seam"></i> Products
+      </button>
+      <button [class.active]="activeTab === 'users'" (click)="onTabChange('users')">
+        <i class="bi bi-people"></i> Users
+        <span class="badge" *ngIf="stats.restrictedUsers">{{ stats.restrictedUsers }}</span>
+      </button>
+      <button [class.active]="activeTab === 'orders'" (click)="onTabChange('orders')">
+        <i class="bi bi-bag-check"></i> Orders
+        <span class="badge" *ngIf="dbOrders.length">{{ dbOrders.length }}</span>
+      </button>
+      <button [class.active]="activeTab === 'promos'" (click)="onTabChange('promos')">
+        <i class="bi bi-tag"></i> Promo Codes
+      </button>
+      <button [class.active]="activeTab === 'content'" (click)="onTabChange('content')">
+        <i class="bi bi-images"></i> Content
+      </button>
+      <button [class.active]="activeTab === 'stats'" (click)="onTabChange('stats')">
+        <i class="bi bi-bar-chart"></i> Analytics
+      </button>
+    </nav>
+    <button class="sidebar-logout" (click)="logout()">
+      <i class="bi bi-box-arrow-left"></i> Logout
+    </button>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <h1>
+        <span *ngIf="activeTab === 'products'">Product Management</span>
+        <span *ngIf="activeTab === 'users'">User Management</span>
+        <span *ngIf="activeTab === 'orders'">Order Management</span>
+        <span *ngIf="activeTab === 'promos'">Promo Codes</span>
+        <span *ngIf="activeTab === 'content'">Content Management</span>
+        <span *ngIf="activeTab === 'stats'">Analytics</span>
+      </h1>
+      <a routerLink="/Master" class="btn-store"><i class="bi bi-shop"></i> View Store</a>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <i class="bi bi-box-seam"></i>
+        <div>
+          <span class="stat-val">{{ stats.totalProducts }}</span
+          ><span class="stat-label">Products</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <i class="bi bi-people"></i>
+        <div>
+          <span class="stat-val">{{ stats.totalUsers }}</span
+          ><span class="stat-label">Users</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <i class="bi bi-bag-check"></i>
+        <div>
+          <span class="stat-val">{{ stats.totalOrders }}</span
+          ><span class="stat-label">Orders</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <i class="bi bi-currency-dollar"></i>
+        <div>
+          <span class="stat-val">{{
+            stats.totalRevenue | currency: 'EGP' : 'symbol' : '1.0-0'
+          }}</span
+          ><span class="stat-label">Revenue</span>
+        </div>
+      </div>
+      <div class="stat-card warn">
+        <i class="bi bi-exclamation-triangle"></i>
+        <div>
+          <span class="stat-val">{{ stats.lowStock }}</span
+          ><span class="stat-label">Low Stock</span>
+        </div>
+      </div>
+      <div class="stat-card warn">
+        <i class="bi bi-person-x"></i>
+        <div>
+          <span class="stat-val">{{ stats.restrictedUsers }}</span
+          ><span class="stat-label">Restricted</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Products Tab ── -->
+    <div *ngIf="activeTab === 'products'">
+      <div class="tab-toolbar">
+        <div class="search-wrap">
+          <i class="bi bi-search"></i>
+          <input type="text" [(ngModel)]="searchTerm" placeholder="Search products..." />
+        </div>
+        <button class="btn-add" (click)="openAdd()">
+          <i class="bi bi-plus-lg"></i> Add Product
+        </button>
+      </div>
+      <div class="products-table-wrap">
+        <table class="products-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Featured</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of filteredProducts">
+              <td>
+                <div class="product-cell">
+                  <img [src]="p.imgUrl" [alt]="p.name" />
+                  <div>
+                    <span class="product-name">{{ p.name }}</span
+                    ><span class="product-desc">{{ p.description | slice: 0 : 40 }}...</span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="cat-badge">{{ getCategoryName(p.categoryId) }}</span>
+              </td>
+              <td>{{ p.price | currency: 'EGP' : 'symbol' : '1.0-0' }}</td>
+              <td>
+                <span class="stock-badge" [class.low]="p.quantity <= 2">{{ p.quantity }} left</span>
+              </td>
+              <td>
+                <button
+                  class="btn-feature"
+                  [class.featured]="isFeatured(p._id)"
+                  (click)="toggleFeatured(p._id)"
+                >
+                  <i [class]="isFeatured(p._id) ? 'bi bi-star-fill' : 'bi bi-star'"></i>
+                </button>
+              </td>
+              <td>
+                <div class="action-btns">
+                  <button class="btn-edit" (click)="openEdit(p)">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button class="btn-del" (click)="delete(p._id)">
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── Users Tab ── -->
+    <div *ngIf="activeTab === 'users'">
+      <div *ngIf="usersLoading" style="text-align: center; padding: 40px; color: var(--muted)">
+        <i
+          class="bi bi-arrow-repeat"
+          style="font-size: 28px; display: block; margin-bottom: 8px"
+        ></i>
+        Loading users...
+      </div>
+      <div *ngIf="!usersLoading" class="products-table-wrap">
+        <table class="products-table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Verified</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let u of dbUsers">
+              <td>
+                <div class="product-cell">
+                  <div class="user-icon-cell"><i class="bi bi-person-circle"></i></div>
+                  <div>
+                    <span class="product-name">{{ u.name }}</span>
+                  </div>
+                </div>
+              </td>
+              <td style="color: var(--muted); font-size: 13px">{{ u.email }}</td>
+              <td>
+                <span
+                  class="cat-badge"
+                  [style.background]="u.role === 'admin' ? '#b8965a' : '#e2d9d2'"
+                  [style.color]="u.role === 'admin' ? '#fff' : 'var(--ink)'"
+                  >{{ u.role }}</span
+                >
+              </td>
+              <td>
+                <span class="stock-badge" [class.low]="!u.isVerified">{{
+                  u.isVerified ? 'Verified' : 'Unverified'
+                }}</span>
+              </td>
+              <td>
+                <span class="stock-badge" [class.low]="u.isblocked">{{
+                  u.isblocked ? 'Blocked' : 'Active'
+                }}</span>
+              </td>
+              <td>
+                <button
+                  *ngIf="u.role !== 'admin'"
+                  class="btn-toggle-user"
+                  [class.restrict]="!u.isblocked"
+                  (click)="toggleBlock(u)"
+                >
+                  <i [class]="!u.isblocked ? 'bi bi-slash-circle' : 'bi bi-check-circle'"></i>
+                  {{ u.isblocked ? 'Unblock' : 'Block' }}
+                </button>
+                <span *ngIf="u.role === 'admin'" style="color: var(--muted); font-size: 12px"
+                  >—</span
+                >
+              </td>
+            </tr>
+            <tr *ngIf="dbUsers.length === 0">
+              <td colspan="6" class="empty-state">
+                <i class="bi bi-people"></i>
+                <p>No users found</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── Orders Tab ── -->
+    <div *ngIf="activeTab === 'orders'">
+      <!-- Loading -->
+      <div *ngIf="ordersLoading" style="text-align: center; padding: 40px; color: var(--muted)">
+        <i
+          class="bi bi-arrow-repeat"
+          style="font-size: 28px; display: block; margin-bottom: 8px"
+        ></i>
+        Loading orders...
+      </div>
+
+      <ng-container *ngIf="!ordersLoading">
+        <!-- Toolbar -->
+        <div class="tab-toolbar">
+          <div class="search-wrap">
+            <i class="bi bi-search"></i>
+            <input
+              type="text"
+              [(ngModel)]="orderSearch"
+              placeholder="Search by order ID or customer..."
+            />
+          </div>
+          <!-- Status filter pills -->
+          <div class="order-filter-pills">
+            <button
+              *ngFor="
+                let s of ['all', 'pending', 'processing', 'shipped', 'delivered', 'cancelled']
+              "
+              class="order-pill"
+              [class.active]="orderStatusFilter === s"
+              (click)="orderStatusFilter = s"
+            >
+              {{ s | titlecase }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Empty -->
+        <div *ngIf="filteredOrders.length === 0" class="empty-state">
+          <i class="bi bi-bag-x"></i>
+          <p>No orders found</p>
+        </div>
+
+        <!-- Orders Table -->
+        <div *ngIf="filteredOrders.length > 0" class="products-table-wrap">
+          <table class="products-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Items</th>
+                <th>Amount</th>
+                <th>Payment</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Change Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let o of filteredOrders">
+                <!-- Order ID -->
+                <td>
+                  <span
+                    style="
+                      font-family: monospace;
+                      font-size: 12px;
+                      color: var(--warm);
+                      font-weight: 700;
+                    "
+                  >
+                    #{{ o._id | slice: 0 : 8 | uppercase }}
+                  </span>
+                </td>
+
+                <!-- Customer -->
+                <td>
+                  <div>
+                    <span class="product-name" style="font-size: 13px">{{
+                      getCustomerName(o)
+                    }}</span>
+                    <span class="product-desc" *ngIf="o.shippingAddress">
+                      {{ o.shippingAddress.city }}, {{ o.shippingAddress.governorate }}
+                    </span>
+                  </div>
+                </td>
+
+                <!-- Items -->
+                <td>
+                  <span class="cat-badge">{{ getOrderItemCount(o) }} item(s)</span>
+                </td>
+
+                <!-- Amount -->
+                <td>
+                  <div>
+                    <span style="font-weight: 700; color: var(--ink)">{{
+                      o.totalAmount | currency: 'EGP' : 'symbol' : '1.0-0'
+                    }}</span>
+                    <span
+                      *ngIf="o.discount > 0"
+                      style="display: block; font-size: 11px; color: #22c55e"
+                    >
+                      -{{ o.discount | currency: 'EGP' : 'symbol' : '1.0-0' }} off
+                    </span>
+                  </div>
+                </td>
+
+                <!-- Payment -->
+                <td>
+                  <span class="cat-badge">
+                    <i
+                      [class]="
+                        o.paymentMethod === 'card' ? 'bi bi-credit-card me-1' : 'bi bi-cash me-1'
+                      "
+                    ></i>
+                    {{ o.paymentMethod | titlecase }}
+                  </span>
+                </td>
+
+                <!-- Date -->
+                <td style="font-size: 12px; color: var(--muted)">
+                  {{ o.createdAt | date: 'MMM d, y' }}
+                </td>
+
+                <!-- Current Status Badge -->
+                <td>
+                  <span
+                    class="status-badge"
+                    [style.background]="getStatusColor(o.status) + '20'"
+                    [style.color]="getStatusColor(o.status)"
+                    [style.border]="'1.5px solid ' + getStatusColor(o.status)"
+                  >
+                    <i class="bi bi-circle-fill me-1" style="font-size: 7px"></i>
+                    {{ o.status | titlecase }}
+                  </span>
+                </td>
+
+                <!-- Status Dropdown -->
+                <td>
+                  <div class="order-status-control">
+                    <select
+                      class="status-select"
+                      [value]="o.status"
+                      [disabled]="o.savingStatus"
+                      (change)="changeOrderStatus(o, $any($event.target).value)"
+                    >
+                      <option *ngFor="let s of orderStatuses" [value]="s">
+                        {{ s | titlecase }}
+                      </option>
+                    </select>
+                    <i *ngIf="o.savingStatus" class="bi bi-arrow-repeat saving-spin"></i>
+                    <i *ngIf="!o.savingStatus" class="bi bi-check2 saved-check"></i>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- ── Promos Tab ── -->
+    <div *ngIf="activeTab === 'promos'">
+      <div class="tab-toolbar">
+        <h3 style="margin: 0; font-family: 'Cormorant Garamond', serif; font-size: 18px">
+          All Promo Codes
+        </h3>
+        <button class="btn-add" (click)="openAddPromo()">
+          <i class="bi bi-plus-lg"></i> Add Promo
+        </button>
+      </div>
+
+      <div *ngIf="promosLoading" style="text-align: center; padding: 40px; color: var(--muted)">
+        <i
+          class="bi bi-arrow-repeat"
+          style="font-size: 28px; display: block; margin-bottom: 8px"
+        ></i>
+        Loading promo codes...
+      </div>
+
+      <div *ngIf="!promosLoading" class="products-table-wrap">
+        <table class="products-table">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Type</th>
+              <th>Value</th>
+              <th>Status</th>
+              <th>Uses</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of apiPromos">
+              <td>
+                <strong>{{ p.code }}</strong>
+              </td>
+              <td>{{ p.discountType === 'percentage' ? 'Percentage' : 'Fixed' }}</td>
+              <td>
+                {{
+                  p.discountType === 'percentage'
+                    ? p.discountValue + '%'
+                    : (p.discountValue | currency: 'EGP' : 'symbol' : '1.0-0')
+                }}
+              </td>
+              <td>
+                <label class="toggle-switch">
+                  <input type="checkbox" [checked]="p.isActive" (change)="togglePromo(p)" />
+                  <span class="toggle-slider"></span>
+                </label>
+              </td>
+              <td>{{ p.usedCount ?? 0 }}</td>
+              <td>
+                <div class="action-btns">
+                  <button class="btn-edit" (click)="openEditPromo(p)">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button class="btn-del" (click)="deletePromo(p._id)">
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="apiPromos.length === 0">
+              <td colspan="6" class="empty-state">
+                <i class="bi bi-tag"></i>
+                <p>No promo codes yet</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── Content Tab ── -->
+    <div *ngIf="activeTab === 'content'">
+      <div class="content-section">
+        <div class="tab-toolbar">
+          <h3 style="margin: 0; font-family: 'Cormorant Garamond', serif; font-size: 18px">
+            <i class="bi bi-images"></i> Homepage Banners
+          </h3>
+          <button class="btn-add" (click)="openAddBanner()">
+            <i class="bi bi-plus-lg"></i> Add Banner
+          </button>
+        </div>
+        <div class="banners-grid">
+          <div class="banner-card" *ngFor="let b of banners">
+            <img [src]="b.imageUrl" [alt]="b.title" />
+            <div class="bc-info">
+              <div class="bc-title">{{ b.title }}</div>
+              <div class="bc-sub">{{ b.subtitle }}</div>
+              <div class="bc-actions">
+                <label class="toggle-switch"
+                  ><input
+                    type="checkbox"
+                    [checked]="b.active"
+                    (change)="toggleBanner(b.id, !b.active)" /><span class="toggle-slider"></span
+                ></label>
+                <button class="btn-edit" (click)="openEditBanner(b)">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn-del" (click)="deleteBanner(b.id)">
+                  <i class="bi bi-trash3"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="content-section" style="margin-top: 28px">
+        <div class="tab-toolbar">
+          <h3 style="margin: 0; font-family: 'Cormorant Garamond', serif; font-size: 18px">
+            <i class="bi bi-star"></i> Featured Products on Homepage
+          </h3>
+        </div>
+        <div class="featured-select-grid">
+          <div
+            class="fsg-card"
+            *ngFor="let p of products"
+            [class.selected]="isFeatured(p._id)"
+            (click)="toggleFeatured(p._id)"
+          >
+            <img [src]="p.imgUrl" [alt]="p.name" />
+            <div class="fsg-name">{{ p.name }}</div>
+            <div class="fsg-check" *ngIf="isFeatured(p._id)"><i class="bi bi-star-fill"></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Stats Tab ── -->
+    <div *ngIf="activeTab === 'stats'" class="analytics-placeholder">
+      <i class="bi bi-bar-chart-line"></i>
+      <h3>Analytics Dashboard</h3>
+      <div class="analytics-grid">
+        <div class="analytic-card">
+          <span class="ac-val">{{ stats.totalProducts }}</span
+          ><span class="ac-lbl">Total Products</span>
+        </div>
+        <div class="analytic-card">
+          <span class="ac-val">{{ stats.totalUsers }}</span
+          ><span class="ac-lbl">Registered Users</span>
+        </div>
+        <div class="analytic-card">
+          <span class="ac-val">{{ stats.totalOrders }}</span
+          ><span class="ac-lbl">Total Orders</span>
+        </div>
+        <div class="analytic-card gold">
+          <span class="ac-val">{{ stats.totalRevenue | currency: 'EGP' : 'symbol' : '1.0-0' }}</span
+          ><span class="ac-lbl">Total Revenue</span>
+        </div>
+        <div class="analytic-card warn">
+          <span class="ac-val">{{ stats.lowStock }}</span
+          ><span class="ac-lbl">Low Stock Items</span>
+        </div>
+        <div class="analytic-card warn">
+          <span class="ac-val">{{ stats.restrictedUsers }}</span
+          ><span class="ac-lbl">Restricted Users</span>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Product Modal -->
+<div class="modal-overlay" *ngIf="showModal" (click)="showModal = false">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <h2>{{ editingProduct ? 'Edit Product' : 'Add New Product' }}</h2>
+    <button class="modal-close" (click)="showModal = false"><i class="bi bi-x-lg"></i></button>
+    <div class="modal-form">
+      <div class="mfield">
+        <label>Product Name</label
+        ><input type="text" [(ngModel)]="form.name" placeholder="e.g. Silk Evening Gown" />
+      </div>
+      <div class="mrow">
+        <div class="mfield">
+          <label>Price (EGP)</label><input type="number" [(ngModel)]="form.price" placeholder="0" />
+        </div>
+        <div class="mfield">
+          <label>Stock Qty</label><input type="number" [(ngModel)]="form.stock" placeholder="1" />
+        </div>
+      </div>
+      <div class="mfield">
+        <label>Category</label>
+        <select [(ngModel)]="form.categoryId">
+          <option *ngFor="let c of apiCategories" [value]="c._id">{{ c.category_name }}</option>
+        </select>
+      </div>
+      <div class="mfield">
+        <label>Gender</label>
+        <select [(ngModel)]="form.gender">
+          <option value="unisex">Unisex</option>
+          <option value="women">Women</option>
+          <option value="men">Men</option>
+        </select>
+      </div>
+      <div class="mfield">
+        <label>Image URL</label
+        ><input type="text" [(ngModel)]="form.imgUrl" placeholder="https://..." />
+      </div>
+      <div class="mfield">
+        <label>Description</label><textarea [(ngModel)]="form.description" rows="3"></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="showModal = false">Cancel</button>
+      <button class="btn-save" (click)="save()" [disabled]="saving">
+        {{ saving ? 'Saving...' : editingProduct ? 'Save Changes' : 'Add Product' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Promo Modal -->
+<div class="modal-overlay" *ngIf="showPromoModal" (click)="showPromoModal = false">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <h2>{{ editingPromo ? 'Edit Promo Code' : 'New Promo Code' }}</h2>
+    <button class="modal-close" (click)="showPromoModal = false"><i class="bi bi-x-lg"></i></button>
+    <div class="modal-form">
+      <div class="mfield">
+        <label>Promo Code</label
+        ><input
+          type="text"
+          [(ngModel)]="promoForm.code"
+          placeholder="e.g. SUMMER20"
+          style="text-transform: uppercase"
+        />
+      </div>
+      <div class="mrow">
+        <div class="mfield">
+          <label>Discount Type</label>
+          <select [(ngModel)]="promoForm.discountType">
+            <option value="percentage">Percentage (%)</option>
+            <option value="fixed">Fixed Amount (EGP)</option>
+          </select>
+        </div>
+        <div class="mfield">
+          <label>Value</label
+          ><input type="number" [(ngModel)]="promoForm.discountValue" placeholder="10" />
+        </div>
+      </div>
+      <div class="mrow">
+        <div class="mfield">
+          <label>Max Uses</label>
+          <input type="number" [(ngModel)]="promoForm.maxUses" placeholder="e.g. 100" />
+        </div>
+        <div class="mfield">
+          <label>Expires At</label>
+          <input type="datetime-local" [(ngModel)]="promoForm.expiresAt" />
+        </div>
+      </div>
+      <div class="mfield" style="flex-direction: row; align-items: center; gap: 12px">
+        <input type="checkbox" [(ngModel)]="promoForm.isActive" id="promoActive" />
+        <label for="promoActive" style="text-transform: none; font-size: 14px; letter-spacing: 0"
+          >Active</label
+        >
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="showPromoModal = false">Cancel</button>
+      <button class="btn-save" (click)="savePromo()">{{ editingPromo ? 'Save' : 'Add' }}</button>
+    </div>
+  </div>
+</div>
+
+<!-- Banner Modal -->
+<div class="modal-overlay" *ngIf="showBannerModal" (click)="showBannerModal = false">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <h2>{{ editingBanner ? 'Edit Banner' : 'New Banner' }}</h2>
+    <button class="modal-close" (click)="showBannerModal = false">
+      <i class="bi bi-x-lg"></i>
+    </button>
+    <div class="modal-form">
+      <div class="mfield">
+        <label>Image URL</label
+        ><input
+          type="text"
+          [(ngModel)]="bannerForm.imageUrl"
+          placeholder="assets/images/slider11.jpg"
+        />
+      </div>
+      <div class="mfield">
+        <label>Title</label
+        ><input type="text" [(ngModel)]="bannerForm.title" placeholder="Banner headline" />
+      </div>
+      <div class="mfield">
+        <label>Subtitle</label
+        ><input type="text" [(ngModel)]="bannerForm.subtitle" placeholder="Short description" />
+      </div>
+      <div class="mfield" style="flex-direction: row; align-items: center; gap: 12px">
+        <input type="checkbox" [(ngModel)]="bannerForm.active" id="bannerActive" />
+        <label for="bannerActive" style="text-transform: none; font-size: 14px; letter-spacing: 0"
+          >Show on homepage</label
+        >
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="showBannerModal = false">Cancel</button>
+      <button class="btn-save" (click)="saveBanner()">{{ editingBanner ? 'Save' : 'Add' }}</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Promo Confirmation Modal -->
+<div class="modal-overlay" *ngIf="pendingDeletePromoId" (click)="cancelDeletePromo()">
+  <div class="modal-box delete-confirm-box" (click)="$event.stopPropagation()">
+    <div class="delete-confirm-icon">
+      <i class="bi bi-trash3"></i>
+    </div>
+    <h2>Delete Promo Code?</h2>
+    <p class="delete-confirm-sub">This action is permanent and cannot be undone.</p>
+    <div class="modal-actions">
+      <button type="button" class="btn-cancel" (click)="cancelDeletePromo()">Cancel</button>
+      <button type="button" class="btn-delete-confirm" (click)="confirmDeletePromo()">
+        <i class="bi bi-trash3"></i> Delete
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notifications -->
+<div class="toast-container">
+  <div
+    *ngFor="let t of toasts"
+    class="toast-item"
+    [class.toast-success]="t.type === 'success'"
+    [class.toast-error]="t.type === 'error'"
+    [class.toast-info]="t.type === 'info'"
+  >
+    <i
+      class="bi"
+      [class.bi-check-circle-fill]="t.type === 'success'"
+      [class.bi-x-circle-fill]="t.type === 'error'"
+      [class.bi-info-circle-fill]="t.type === 'info'"
+    ></i>
+    <span>{{ t.message }}</span>
+    <button (click)="dismissToast(t.id)"><i class="bi bi-x"></i></button>
+  </div>
+</div>

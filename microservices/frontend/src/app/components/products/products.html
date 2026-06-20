@@ -1,0 +1,106 @@
+<!-- <div class="row row-cols-1 row-cols-md-4 g-4">
+  <div class="col" *ngFor="let product of filteratedList">
+    <div class="card" appHighlightCard>
+      <div class="card-img-wrapper">
+        <img [src]="product.imgUrl" class="card-img-top" alt="..." />
+        <button
+          class="wishlist-btn"
+          [class.active]="isInWishlist(product.id)"
+          (click)="toggleWishlist(product, $event)"
+          [title]="isInWishlist(product.id) ? 'Remove from Wishlist' : 'Add to Wishlist'"
+        >
+          <i [class]="isInWishlist(product.id) ? 'bi bi-heart-fill' : 'bi bi-heart'"></i>
+        </button>
+      </div>
+
+      <div class="card-body">
+        <h5 class="card-title" style="color: brown">{{ product.name }}</h5>
+        <p class="card-text" style="color: grey">{{ product.description }}</p>
+        <p class="card-text">Price: {{ product.price | currency: 'EGP ' : 'symbol' : '1.0-0' }}</p>
+
+        <div [ngSwitch]="liveStock(product.id)">
+          <p *ngSwitchCase="0" style="color: red; font-weight: 600">Quantity: Sold Out</p>
+          <p *ngSwitchCase="1" style="color: orange; font-weight: 600">Quantity: Last Piece!</p>
+          <p *ngSwitchDefault>Quantity: {{ liveStock(product.id) }}</p>
+        </div>
+
+        <div class="card-actions">
+          <button
+            class="addtocart"
+            (click)="addToCart(product)"
+            [disabled]="liveStock(product.id) === 0"
+            [class.added]="addedToCartId === product.id"
+          >
+            <i
+              class="bi"
+              [class]="addedToCartId === product.id ? 'bi-check-lg' : 'bi-bag-plus'"
+            ></i>
+            {{
+              addedToCartId === product.id
+                ? 'Added!'
+                : liveStock(product.id) === 0
+                  ? 'Sold Out'
+                  : 'Add to Cart'
+            }}
+          </button>
+          <button class="btn-details" (click)="navigateToDetails(product.id)">
+            <i class="bi bi-eye"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> -->
+<div class="row row-cols-1 row-cols-md-4 g-4">
+  <div class="col" *ngFor="let product of filteratedList">
+    <div class="card" appHighlightCard>
+      <div class="card-img-wrapper">
+        <img [src]="product.imgUrl" class="card-img-top" alt="..." />
+        <button
+          class="wishlist-btn"
+          [class.active]="isInWishlist(product._id)"
+          (click)="toggleWishlist(product, $event)"
+          [title]="isInWishlist(product._id) ? 'Remove from Wishlist' : 'Add to Wishlist'"
+        >
+          <i [class]="isInWishlist(product._id) ? 'bi bi-heart-fill' : 'bi bi-heart'"></i>
+        </button>
+      </div>
+
+      <div class="card-body">
+        <h5 class="card-title" style="color: brown">{{ product.name }}</h5>
+        <p class="card-text" style="color: grey">{{ product.description }}</p>
+        <p class="card-text">Price: {{ product.price | currency: 'EGP ' : 'symbol' : '1.0-0' }}</p>
+
+        <div [ngSwitch]="liveStock(product._id)">
+          <p *ngSwitchCase="0" style="color: red; font-weight: 600">Quantity: Sold Out</p>
+          <p *ngSwitchCase="1" style="color: orange; font-weight: 600">Quantity: Last Piece!</p>
+          <p *ngSwitchDefault>Quantity: {{ liveStock(product._id) }}</p>
+        </div>
+
+        <div class="card-actions">
+          <button
+            class="addtocart"
+            (click)="addToCart(product)"
+            [disabled]="liveStock(product._id) === 0"
+            [class.added]="addedToCartId === product._id"
+          >
+            <i
+              class="bi"
+              [class]="addedToCartId === product._id ? 'bi-check-lg' : 'bi-bag-plus'"
+            ></i>
+            {{
+              addedToCartId === product._id
+                ? 'Added!'
+                : liveStock(product._id) === 0
+                  ? 'Sold Out'
+                  : 'Add to Cart'
+            }}
+          </button>
+          <button class="btn-details" (click)="navigateToDetails(product._id)">
+            <i class="bi bi-eye"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

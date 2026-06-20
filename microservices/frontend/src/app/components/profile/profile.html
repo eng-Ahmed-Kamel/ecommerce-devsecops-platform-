@@ -1,0 +1,128 @@
+<div class="profile-page">
+  <div class="profile-container">
+    <!-- Sidebar -->
+    <aside class="profile-sidebar">
+      <div class="profile-avatar">
+        <i class="bi bi-person-circle"></i>
+      </div>
+      <div class="profile-name">{{ user?.name }}</div>
+      <div class="profile-email">{{ user?.email }}</div>
+
+      <div class="profile-stats">
+        <div class="ps-item">
+          <span class="ps-val">{{ orderCount }}</span>
+          <span class="ps-lbl">Orders</span>
+        </div>
+        <div class="ps-item">
+          <span class="ps-val">{{ wishlistCount }}</span>
+          <span class="ps-lbl">Wishlist</span>
+        </div>
+      </div>
+
+      <nav class="profile-nav">
+        <button [class.active]="activeTab === 'personal'" (click)="activeTab = 'personal'">
+          <i class="bi bi-person"></i> Personal Info
+        </button>
+        <button [class.active]="activeTab === 'address'" (click)="activeTab = 'address'">
+          <i class="bi bi-geo-alt"></i> Address
+        </button>
+      </nav>
+
+      <div class="profile-links">
+        <a routerLink="/order-history"><i class="bi bi-clock-history"></i> Order History</a>
+        <a routerLink="/wishlist"><i class="bi bi-heart"></i> Wishlist</a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="profile-main">
+
+      <!-- Success Toast -->
+      <div class="success-toast" *ngIf="successMsg">
+        <i class="bi bi-check-circle-fill"></i> {{ successMsg }}
+      </div>
+
+      <!-- Error Toast -->
+      <div class="error-toast" *ngIf="errorMsg">
+        <i class="bi bi-x-circle-fill"></i> {{ errorMsg }}
+      </div>
+
+      <!-- Personal Info -->
+      <div *ngIf="activeTab === 'personal'" class="profile-card">
+        <div class="card-header">
+          <h2><i class="bi bi-person"></i> Personal Information</h2>
+          <p>Update your name and phone number</p>
+        </div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Full Name</label>
+            <input type="text" [(ngModel)]="name" placeholder="Your full name" />
+          </div>
+          <div class="form-field">
+            <label>Email Address</label>
+            <input type="email" [value]="user?.email" disabled class="disabled-field" />
+            <small>Email cannot be changed</small>
+          </div>
+          <div class="form-field">
+            <label>Phone Number</label>
+            <input type="tel" [(ngModel)]="phone" placeholder="e.g. 01000000000" />
+          </div>
+        </div>
+        <button class="btn-save" (click)="savePersonal()" [disabled]="isLoading">
+          <i class="bi bi-check2"></i> {{ isLoading ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+
+      <!-- Address -->
+      <div *ngIf="activeTab === 'address'" class="profile-card">
+        <div class="card-header">
+          <h2><i class="bi bi-geo-alt"></i> Delivery Address</h2>
+          <p>Your default shipping address</p>
+        </div>
+        <div class="form-grid">
+          <div class="form-field full-width">
+            <label>Full Address</label>
+            <textarea
+              [(ngModel)]="address"
+              rows="4"
+              placeholder="Street, building, floor, apartment..."
+            ></textarea>
+          </div>
+        </div>
+        <button class="btn-save" (click)="saveAddress()" [disabled]="isLoading">
+          <i class="bi bi-check2"></i> {{ isLoading ? 'Saving...' : 'Save Address' }}
+        </button>
+      </div>
+
+      <!-- Delete Account -->
+      <div class="profile-card danger-card">
+        <div class="card-header">
+          <h2><i class="bi bi-trash3"></i> Delete Account</h2>
+          <p>Permanently remove your account and all associated data</p>
+        </div>
+
+        <div *ngIf="!showDeleteConfirm">
+          <button class="btn-danger" (click)="confirmDelete()">
+            <i class="bi bi-trash3"></i> Delete My Account
+          </button>
+        </div>
+
+        <div *ngIf="showDeleteConfirm" class="delete-confirm">
+          <p class="confirm-text">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            Are you sure? This action <strong>cannot be undone</strong>.
+          </p>
+          <div class="confirm-actions">
+            <button class="btn-cancel" (click)="cancelDelete()">
+              <i class="bi bi-x"></i> Cancel
+            </button>
+            <button class="btn-danger" (click)="deleteAccount()">
+              <i class="bi bi-trash3"></i> Yes, Delete My Account
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>

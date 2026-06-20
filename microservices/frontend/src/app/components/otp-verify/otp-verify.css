@@ -1,0 +1,43 @@
+:root { --bg:#f7f0e9; --ink:#2c2420; --muted:#7a6e68; --warm:#b8965a; }
+
+.auth-page { min-height:100vh; background:var(--bg); display:flex; align-items:center; justify-content:center; padding:40px 16px; }
+.auth-card { background:#fff; border-radius:16px; padding:48px 40px; width:100%; max-width:420px; box-shadow:0 8px 48px rgba(44,36,32,0.10); text-align:center; }
+.auth-brand { font-family:'Pinyon Script','Dancing Script',cursive; font-size:42px; color:var(--ink); text-decoration:none; display:block; line-height:1; }
+
+.email-icon { font-size:48px; color:var(--warm); margin:20px 0 10px; }
+
+.auth-title { font-size:24px; font-weight:700; color:var(--ink); margin:0 0 8px; font-family:'Cormorant Garamond',Georgia,serif; }
+.auth-sub { font-size:14px; color:var(--muted); margin:0 0 28px; line-height:1.6; }
+.auth-sub strong { color:var(--ink); }
+
+.auth-error { background:#fef2f2; border:1px solid #fecaca; color:#dc2626; border-radius:8px; padding:10px 14px; font-size:13px; text-align:left; margin-bottom:16px; }
+
+.otp-inputs { display:flex; gap:10px; justify-content:center; margin-bottom:28px; }
+.otp-box {
+  width:48px; height:56px;
+  border:1.5px solid #e2d9d2;
+  border-radius:10px;
+  font-size:24px; font-weight:700;
+  text-align:center; color:var(--ink);
+  background:#faf7f4;
+  outline:none;
+  transition:border-color 0.2s, background 0.2s;
+  caret-color: var(--warm);
+}
+.otp-box:focus { border-color:var(--warm); background:#fff; box-shadow:0 0 0 3px rgba(184,150,90,0.15); }
+.otp-box.filled { border-color:var(--ink); background:#fff; }
+
+.btn-submit { width:100%; background:var(--ink); color:#fff; border:none; border-radius:10px; padding:14px; font-size:15px; font-weight:600; letter-spacing:0.05em; cursor:pointer; transition:background 0.2s; display:flex; align-items:center; justify-content:center; min-height:50px; }
+.btn-submit:hover:not(:disabled) { background:#3d3330; }
+.btn-submit:disabled { opacity:0.5; cursor:not-allowed; }
+
+.spinner { width:20px; height:20px; border:2px solid rgba(255,255,255,0.4); border-top-color:#fff; border-radius:50%; animation:spin 0.7s linear infinite; display:inline-block; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+.resend-row { margin-top:20px; font-size:13px; color:var(--muted); }
+.resend-btn { background:none; border:none; color:var(--warm); font-size:13px; font-weight:600; cursor:pointer; }
+.resend-btn:hover { text-decoration:underline; }
+
+.auth-switch { margin-top:24px; font-size:14px; }
+.auth-switch a { color:var(--warm); text-decoration:none; font-weight:500; }
+.auth-switch a:hover { text-decoration:underline; }

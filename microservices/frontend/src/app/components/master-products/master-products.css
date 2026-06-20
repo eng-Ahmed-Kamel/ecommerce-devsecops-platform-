@@ -1,0 +1,247 @@
+/* ===================== General ===================== */
+body {
+  background-color: #fff;
+  font-family: 'Montserrat', sans-serif;
+}
+
+
+/* ===================== Floating Cart ===================== */
+.flaura-floating-cart {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background: #3B2F2F;
+  color: #fff;
+  padding: 14px 18px;
+  border-radius: 12px;
+  min-width: 230px;
+  z-index: 1050;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+
+.flaura-floating-cart:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+.flaura-cart-items {
+  font-size: 0.7rem;
+  color: #c9b8af;
+  text-transform: uppercase;
+}
+
+.flaura-cart-price {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #D4AF7A;
+}
+
+.flaura-view-cart-btn {
+  background: #C9956C;
+  border: none;
+  color: #fff;
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  margin-left: 10px;
+}
+
+.flaura-view-cart-btn:hover {
+  background: #b8845d;
+}
+
+
+/* ===================== Section Header ===================== */
+.flaura-section-header {
+  background-color: #FDF8F5;
+}
+
+.flaura-section-sub {
+  font-size: 0.7rem;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: #C9956C;
+}
+
+.flaura-section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.8rem;
+  font-weight: 300;
+  color: #3B2F2F;
+  letter-spacing: 3px;
+}
+
+.flaura-divider {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #C9956C, transparent);
+}
+
+
+/* ===================== Gender Section ===================== */
+.flaura-gender-section {
+  background: #3B2F2F;
+  border-bottom: 2px solid #C9956C;
+}
+
+.flaura-gender-tab {
+  background: transparent;
+  border: 1.5px solid rgba(201, 149, 108, 0.4);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.25rem;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  color: #c9b8af;
+  padding: 12px 40px;
+  border-radius: 2px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.flaura-gender-tab:hover {
+  color: #D4AF7A;
+  border-color: #D4AF7A;
+}
+
+.flaura-gender-tab.active {
+  color: #fff;
+  background: rgba(201, 149, 108, 0.15);
+  border-color: #C9956C;
+  font-weight: 600;
+}
+
+/* Subtle shimmer line under active gender tab */
+.flaura-gender-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 20%;
+  width: 60%;
+  height: 2px;
+  background: #C9956C;
+}
+
+
+/* ===================== Categories Section ===================== */
+.flaura-category-section {
+  background: #FDF8F5;
+  border-top: 1px solid #f0e5df;
+  border-bottom: 1px solid #f0e5df;
+}
+
+.flaura-category-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 3rem;
+  color: #3B2F2F;
+  letter-spacing: 2px;
+}
+
+/* Category Tabs */
+.flaura-category-tab {
+  background: transparent;
+  border: none;
+  font-size: 0.99rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color:  #3B2F2F;
+  padding: 14px 24px;
+  margin: 6px 10px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* underline effect */
+.flaura-category-tab::after {
+  content: "";
+  position: absolute;
+  bottom: 6px;
+  left: 20%;
+  width: 60%;
+  height: 1px;
+  background: transparent;
+  transition: all 0.3s ease;
+}
+
+.flaura-category-tab:hover {
+  color: #C9956C;
+}
+
+.flaura-category-tab.active {
+  color: #C9956C;
+  font-weight: 600;
+}
+
+.flaura-category-tab.active::after {
+  background: #C9956C;
+}
+
+
+/* ===================== Responsive ===================== */
+@media (max-width: 768px) {
+  .flaura-floating-cart {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+  }
+
+  .flaura-section-title {
+    font-size: 2rem;
+  }
+
+  .flaura-gender-tab {
+    font-size: 1rem;
+    padding: 10px 24px;
+    letter-spacing: 4px;
+  }
+
+  .flaura-category-tab {
+    font-size: 0.7rem;
+    padding: 10px 14px;
+  }
+}
+
+/* ── Banner ── */
+.home-banners { position: relative; overflow: hidden; }
+.banner-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+.banner-track::-webkit-scrollbar { display: none; }
+.banner-slide { flex: 0 0 100%; scroll-snap-align: start; position: relative; max-height: 480px; overflow: hidden; }
+.banner-slide img { width: 100%; height: 480px; object-fit: cover; }
+.banner-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.55)); color: #fff; padding: 40px 48px 32px; }
+.banner-overlay h2 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 36px; margin: 0 0 4px; }
+.banner-overlay p { font-size: 16px; opacity: 0.85; margin: 0; }
+
+/* ── Featured ── */
+.featured-section { padding: 48px 0 24px; }
+.section-head { margin-bottom: 32px; }
+.featured-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+.featured-card { border-radius: 14px; overflow: hidden; background: #fff; border: 1px solid #e2d9d2; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+.featured-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+.fc-img-wrap { position: relative; }
+.fc-img-wrap img { width: 100%; height: 200px; object-fit: cover; }
+.fc-badge { position: absolute; top: 10px; left: 10px; background: #b8965a; color: #fff; font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 700; letter-spacing: 0.05em; }
+.fc-body { padding: 12px 14px; }
+.fc-name { font-size: 14px; font-weight: 600; color: #2c2420; margin-bottom: 4px; }
+.fc-price { font-size: 13px; color: #b8965a; font-weight: 700; }
+
+/* ── Filter Bar ── */
+.filter-bar-section { padding: 0 0 12px; }
+.filter-bar { background: #fff; border: 1.5px solid #e2d9d2; border-radius: 14px; padding: 14px 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.filter-search { flex: 1; min-width: 200px; position: relative; }
+.filter-search i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #7a6e68; }
+.filter-search input { width: 100%; padding: 10px 14px 10px 36px; border: 1.5px solid #e2d9d2; border-radius: 10px; font-size: 14px; color: #2c2420; outline: none; background: #faf7f4; transition: border-color 0.2s; }
+.filter-search input:focus { border-color: #b8965a; }
+.filter-price { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.filter-label { font-size: 12px; color: #7a6e68; font-weight: 700; white-space: nowrap; }
+.filter-price input { width: 90px; padding: 9px 12px; border: 1.5px solid #e2d9d2; border-radius: 10px; font-size: 14px; color: #2c2420; outline: none; background: #faf7f4; }
+.filter-price input:focus { border-color: #b8965a; }
+.filter-sep { color: #7a6e68; }
+.filter-clear { background: none; border: 1.5px solid #e2d9d2; color: #7a6e68; border-radius: 10px; padding: 9px 16px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; }
+.filter-clear:hover { border-color: #b8965a; color: #b8965a; }
+.filter-results-info { font-size: 13px; color: #7a6e68; padding: 6px 4px; }
+
+.empty-filter-state { text-align: center; padding: 60px 20px; color: #7a6e68; }
+.empty-filter-state i { font-size: 48px; display: block; margin-bottom: 12px; }
+.empty-filter-state p { font-size: 16px; margin-bottom: 16px; }
+.empty-filter-state button { background: #2c2420; color: #fff; border: none; border-radius: 10px; padding: 10px 24px; font-size: 14px; cursor: pointer; }

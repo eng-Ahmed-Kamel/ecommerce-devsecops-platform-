@@ -1,0 +1,74 @@
+<div class="wishlist-page">
+  <header class="page-header">
+    <div class="container">
+      <span class="eyebrow">Your Collection</span>
+      <h1>Wishlist & Favorites</h1>
+      <div class="ornament">
+        <div class="orn-line"></div>
+        <div class="orn-diamond"></div>
+        <div class="orn-line"></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container page-body">
+    <!-- Empty State -->
+    <div *ngIf="isEmpty" class="empty-state">
+      <div class="empty-icon"><i class="bi bi-heart"></i></div>
+      <h2>Your wishlist is empty</h2>
+      <p>Save pieces you love while you browse — they'll be waiting for you here.</p>
+      <a routerLink="/Master" class="btn-browse">
+        <i class="bi bi-arrow-left me-2"></i> Browse Collection
+      </a>
+    </div>
+
+    <!-- Grid -->
+    <div *ngIf="!isEmpty">
+      <p class="count">
+        {{ wishlistProducts.length }} saved piece{{ wishlistProducts.length > 1 ? 's' : '' }}
+      </p>
+
+      <div class="wishlist-grid">
+        <div *ngFor="let p of wishlistProducts" class="wish-card">
+          <div class="wish-img-wrap">
+            <img [src]="p.imgUrl || p.image" [alt]="p.name" />
+            <button class="btn-remove" (click)="remove(p)" title="Remove from wishlist">
+              <i class="bi bi-heart-fill"></i>
+            </button>
+          </div>
+
+          <div class="wish-info">
+            <a [routerLink]="['/Details', p._id]" class="wish-name">{{ p.name }}</a>
+            <span class="wish-price">{{ p.price | currency: 'EGP' : 'symbol' : '1.0-0' }}</span>
+            <span class="wish-stock" [class.low]="getStock(p) <= 2">
+              {{ getStock(p) <= 2 ? 'Only ' + getStock(p) + ' left!' : 'In Stock' }}
+            </span>
+          </div>
+
+          <div class="wish-actions">
+            <button
+              class="btn-cart"
+              (click)="addToCart(p)"
+              [disabled]="isInCart(p._id) || addingToCartId === p._id"
+            >
+              <i class="bi bi-bag-plus me-1"></i>
+              {{
+                isInCart(p._id) ? 'In Cart' : addingToCartId === p._id ? 'Adding...' : 'Add to Cart'
+              }}
+            </button>
+            <button class="btn-view" [routerLink]="['/Details', p._id]">
+              <i class="bi bi-eye"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="wishlist-cta">
+        <a routerLink="/Master" class="btn-continue">
+          <i class="bi bi-arrow-left me-2"></i>Continue Shopping
+        </a>
+        <a routerLink="/cart" class="btn-cart-goto"> <i class="bi bi-bag me-2"></i>View Cart </a>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,433 @@
+/* ── Variables (define in global styles.css too) ───────────────────────────── */
+:root {
+  --bg:      #f7f0e9;   /* warm taupe — matches the reference */
+  --ink:     #2c2420;   /* deep warm brown */
+  --muted:   #7a6e68;   /* secondary text */
+  --warm:    #b8965a;   /* gold accent */
+  --h:       64px;
+}
+
+/* ── Header shell ──────────────────────────────────────────────────────────── */
+.hdr {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: var(--h);
+  z-index: 1000;
+  background: var(--bg);
+  transition: box-shadow 0.35s ease;
+}
+
+.hdr.scrolled {
+  box-shadow: 0 4px 24px rgba(44, 36, 32, 0.08);
+}
+
+/* ── Inner: 3-column ───────────────────────────────────────────────────────── */
+.hdr-inner {
+  height: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  padding: 0 40px;
+  gap: 24px;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+/* ── Brand ─────────────────────────────────────────────────────────────────── */
+.brand {
+  font-family: 'Pinyon Script', 'Dancing Script', cursive;
+  font-size: 35px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  text-decoration: none;
+  line-height: 0.9;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+/* 
+.brand-script {
+  font-family: 'Pinyon Script', 'Dancing Script', cursive;
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--muted);
+  margin-top: -2px;
+  letter-spacing: 0.04em;
+} */
+
+/* ── Desktop nav ───────────────────────────────────────────────────────────── */
+.desk-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 45px;
+}
+
+.lnk {
+  font-family: 'Didact Gothic', 'Futura', sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+  opacity: 1;
+  position: relative;
+  transition: opacity 0.25s ease, color 0.25s ease;
+}
+
+.lnk::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--ink);
+  transition: width 0.3s ease;
+}
+
+.lnk:hover {
+  opacity: 1.5;
+}
+
+.lnk:hover::after,
+.lnk.active::after {
+  width: 100%;
+}
+
+.lnk.active {
+  opacity: 1;
+}
+
+/* ── Right slot ────────────────────────────────────────────────────────────── */
+.right-slot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ── Icon buttons ──────────────────────────────────────────────────────────── */
+.icon-btn {
+  background: none;
+  border: none;
+  font-size: 15px;
+  color: var(--ink);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  opacity: 0.8;
+  position: relative;
+  transition: opacity 0.25s ease;
+}
+
+.icon-btn:hover {
+  opacity: 1;
+}
+
+.bag-dot {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  width: 12px;
+  height: 12px;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 9px;
+  font-family: 'Didact Gothic', sans-serif;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+
+/* ── CTA button ────────────────────────────────────────────────────────────── */
+.cta-btn {
+  font-family: 'Didact Gothic', 'Futura', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bg);
+  background: var(--ink);
+  text-decoration: none;
+  padding: 9px 20px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease;
+  white-space: nowrap;
+  margin-left: 8px;
+}
+
+.cta-btn:hover {
+  background: var(--warm);
+  color: #fff;
+}
+
+/* ── Mobile toggle ─────────────────────────────────────────────────────────── */
+.toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  flex-direction: column;
+  gap: 5px;
+  align-items: flex-end;
+  margin-left: 8px;
+}
+
+.toggle span {
+  display: block;
+  height: 1px;
+  background: var(--ink);
+  transition: width 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
+}
+
+.toggle span:nth-child(1) { width: 22px; }
+.toggle span:nth-child(2) { width: 15px; }
+.toggle span:nth-child(3) { width: 19px; }
+
+.toggle.open span:nth-child(1) { width: 20px; transform: translateY(6px) rotate(45deg); }
+.toggle.open span:nth-child(2) { opacity: 0; width: 0; }
+.toggle.open span:nth-child(3) { width: 20px; transform: translateY(-6px) rotate(-45deg); }
+
+/* ── Mobile drawer ─────────────────────────────────────────────────────────── */
+.drawer {
+  position: fixed;
+  top: var(--h);
+  left: 0;
+  right: 0;
+  background: var(--bg);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 36px 0 44px;
+  border-bottom: 1px solid rgba(44, 36, 32, 0.12);
+  transform: translateY(-110%);
+  opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.drawer.open {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: all;
+}
+
+.drawer a {
+  font-family: 'Didact Gothic', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.drawer a:hover,
+.drawer a.active {
+  opacity: 1;
+}
+
+.drawer .cta-btn {
+  margin-top: 8px;
+  margin-left: 0;
+  opacity: 1;
+  color: var(--bg);
+}
+
+/* ── Responsive ────────────────────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .desk-nav { display: none; }
+  .cta-btn  { display: none; }
+  .toggle   { display: flex; }
+
+  .hdr-inner {
+    grid-template-columns: auto 1fr auto;
+    padding: 0 20px;
+  }
+}
+/* ── User menu ──────────────────────────────────────────────────────────────── */
+.user-menu {
+  position: relative;
+  cursor: pointer;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: background 0.2s;
+}
+.user-avatar:hover { background: var(--warm); }
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background: #fff;
+  border: 1px solid #e2d9d2;
+  border-radius: 12px;
+  min-width: 180px;
+  box-shadow: 0 8px 32px rgba(44,36,32,0.12);
+  padding: 8px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition: all 0.2s;
+  z-index: 200;
+}
+.user-dropdown.open { opacity: 1; pointer-events: all; transform: translateY(0); }
+.user-dropdown-name {
+  padding: 8px 12px 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  border-bottom: 1px solid #f0ebe5;
+  margin-bottom: 4px;
+}
+.user-dropdown a,
+.user-dropdown button {
+  display: flex;
+  align-items: center;
+  padding: 9px 12px;
+  font-size: 14px;
+  color: var(--ink);
+  text-decoration: none;
+  border: none;
+  background: none;
+  width: 100%;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+.user-dropdown a:hover,
+.user-dropdown button:hover { background: #faf7f4; }
+
+/* ══════════════════════════════════════════════
+   DARK THEME — header & global overrides
+   ══════════════════════════════════════════════ */
+
+/* Theme toggle button */
+.theme-toggle {
+  font-size: 15px;
+  transition: color 0.25s, transform 0.3s;
+}
+.theme-toggle:hover { transform: rotate(20deg); }
+
+/* Dark header bar */
+.hdr.dark {
+  background: #0f0d0c;
+  border-bottom: 1px solid rgba(184,150,90,0.18);
+}
+.hdr.dark .brand,
+.hdr.dark .lnk,
+.hdr.dark .icon-btn  { color: #e8ddd4; }
+.hdr.dark .lnk::after { background: var(--warm); }
+.hdr.dark .bag-dot   { background: var(--warm); color: #0f0d0c; }
+.hdr.dark .cta-btn   { background: var(--warm); color: #0f0d0c; }
+.hdr.dark .cta-btn:hover { background: #e8ddd4; }
+.hdr.dark .user-avatar { background: var(--warm); color: #0f0d0c; }
+.hdr.dark .toggle span { background: #e8ddd4; }
+
+/* Dark mobile drawer */
+.drawer.dark {
+  background: #0f0d0c;
+  border-bottom-color: rgba(184,150,90,0.18);
+}
+.drawer.dark .lnk { color: #e8ddd4; }
+
+/* ── Global dark theme (applied to <html>) ── */
+:root.dark-theme {
+  --bg:    #0f0d0c;
+  --ink:   #e8ddd4;
+  --muted: #9e9088;
+  --warm:  #c9a96e;
+}
+
+:root.dark-theme body {
+  background: #0f0d0c;
+  color: #e8ddd4;
+}
+
+/* Cards & sections */
+:root.dark-theme .card,
+:root.dark-theme .profile-card,
+:root.dark-theme .profile-sidebar,
+:root.dark-theme .filter-bar,
+:root.dark-theme .user-dropdown,
+:root.dark-theme .featured-card {
+  background: #1a1614 !important;
+  border-color: rgba(184,150,90,0.18) !important;
+  color: #e8ddd4 !important;
+}
+
+:root.dark-theme .card-title,
+:root.dark-theme .card-text,
+:root.dark-theme .fc-name,
+:root.dark-theme .profile-name,
+:root.dark-theme .profile-email {
+  color: #e8ddd4 !important;
+}
+
+/* Inputs */
+:root.dark-theme input,
+:root.dark-theme textarea,
+:root.dark-theme select {
+  background: #261f1c !important;
+  border-color: rgba(184,150,90,0.25) !important;
+  color: #e8ddd4 !important;
+}
+:root.dark-theme input::placeholder,
+:root.dark-theme textarea::placeholder { color: #6e6058 !important; }
+
+/* Buttons */
+:root.dark-theme .btn-save,
+:root.dark-theme .addtocart,
+:root.dark-theme .flaura-view-cart-btn {
+  background: #c9a96e !important;
+  color: #0f0d0c !important;
+}
+
+/* Master products section */
+:root.dark-theme .flaura-category-section,
+:root.dark-theme .filter-bar-section > .container,
+:root.dark-theme section.py-4 {
+  background: transparent;
+}
+:root.dark-theme .flaura-category-tab {
+  background: #1a1614;
+  border-color: rgba(184,150,90,0.2);
+  color: #e8ddd4;
+}
+:root.dark-theme .flaura-category-tab.active {
+  background: #c9a96e;
+  color: #0f0d0c;
+}
+:root.dark-theme .flaura-floating-cart {
+  background: #1a1614 !important;
+  border-color: rgba(184,150,90,0.2) !important;
+  color: #e8ddd4 !important;
+}
+
+/* Banner overlay already dark — looks fine in both modes */
+
+/* Dropdown menu in dark */
+:root.dark-theme .user-dropdown { background: #1a1614; border-color: rgba(184,150,90,0.2); }
+:root.dark-theme .user-dropdown-name,
+:root.dark-theme .user-dropdown a,
+:root.dark-theme .user-dropdown button { color: #e8ddd4 !important; }
+:root.dark-theme .user-dropdown a:hover,
+:root.dark-theme .user-dropdown button:hover { background: #261f1c !important; }

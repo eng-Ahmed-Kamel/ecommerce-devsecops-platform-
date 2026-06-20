@@ -1,0 +1,286 @@
+<!-- 
+<div class="flaura-floating-cart shadow-lg">
+  <div class="d-flex align-items-center justify-content-between">
+    <div>
+      <div class="flaura-cart-items">{{ cartCount }} Items</div>
+      <div class="flaura-cart-price">EGP {{ grandTotal.toLocaleString() }}</div>
+    </div>
+    <button class="btn btn-sm flaura-view-cart-btn" routerLink="/cart">View Cart</button>
+  </div>
+</div>
+
+<section class="featured-section" *ngIf="featuredProducts.length > 0">
+  <div class="container">
+    <div class="section-head text-center">
+      <p class="flaura-section-sub">Handpicked For You</p>
+      <h3 class="flaura-category-title">Featured Pieces</h3>
+      <div class="flaura-divider mx-auto"></div>
+    </div>
+    <div class="featured-grid">
+      <div
+        class="featured-card"
+        *ngFor="let p of featuredProducts"
+        [routerLink]="['/Details', p.id]"
+      >
+        <div class="fc-img-wrap">
+          <img [src]="p.imgUrl" [alt]="p.name" />
+          <span class="fc-badge">Featured</span>
+        </div>
+        <div class="fc-body">
+          <div class="fc-name">{{ p.name }}</div>
+          <div class="fc-price">EGP {{ p.price.toLocaleString() }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="flaura-gender-section py-4">
+  <div class="container">
+    <div class="d-flex justify-content-center gap-3">
+      @for (g of genderList; track g.id) {
+        <button
+          class="flaura-gender-tab"
+          [ngClass]="{ active: selectedGender === g.id }"
+          (click)="selectGender(g.id)"
+        >
+          {{ g.name }}
+        </button>
+      }
+    </div>
+  </div>
+</section>
+
+<section class="flaura-category-section py-5">
+  <div class="container">
+    <div class="text-center mb-4">
+      <p class="flaura-section-sub mb-2">Curated For You</p>
+      <h3 class="flaura-category-title">The Collection</h3>
+      <div class="flaura-divider mx-auto"></div>
+    </div>
+    <div class="d-flex justify-content-center flex-wrap">
+      @for (cat of catList; track cat.id) {
+        <button
+          class="flaura-category-tab"
+          [ngClass]="{ active: selectedCatId === cat.id }"
+          (click)="selectCategory(cat.id)"
+        >
+          {{ cat.name }}
+        </button>
+      }
+    </div>
+  </div>
+</section>
+
+<section class="filter-bar-section">
+  <div class="container">
+    <div class="filter-bar">
+      <div class="filter-search">
+        <i class="bi bi-search"></i>
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="applyFilters()"
+          placeholder="Search products by name..."
+        />
+      </div>
+      <div class="filter-price">
+        <span class="filter-label">Price Range (EGP)</span>
+        <input
+          type="number"
+          [(ngModel)]="minPrice"
+          (ngModelChange)="applyFilters()"
+          placeholder="Min"
+        />
+        <span class="filter-sep">—</span>
+        <input
+          type="number"
+          [(ngModel)]="maxPrice"
+          (ngModelChange)="applyFilters()"
+          placeholder="Max"
+        />
+      </div>
+      <button
+        class="filter-clear"
+        (click)="clearFilters()"
+        *ngIf="searchTerm || minPrice !== null || maxPrice !== null"
+      >
+        <i class="bi bi-x-circle"></i> Clear
+      </button>
+    </div>
+    <div class="filter-results-info" *ngIf="searchTerm || minPrice !== null || maxPrice !== null">
+      Showing <strong>{{ filteredProducts.length }}</strong> result(s)
+    </div>
+  </div>
+</section>
+
+<section class="py-4">
+  <div class="container">
+    <div *ngIf="filteredProducts.length === 0" class="empty-filter-state">
+      <i class="bi bi-search"></i>
+      <p>No products match your search.</p>
+      <button (click)="clearFilters()">Clear Filters</button>
+    </div>
+    <app-products
+      *ngIf="filteredProducts.length > 0"
+      [recievedID]="selectedCatId"
+      [overrideProducts]="filteredProducts"
+      (total)="receiveTotal($event)"
+    >
+    </app-products>
+  </div>
+</section> -->
+<!-- Floating Cart -->
+<div class="flaura-floating-cart shadow-lg">
+  <div class="d-flex align-items-center justify-content-between">
+    <div>
+      <div class="flaura-cart-items">{{ cartCount }} Items</div>
+      <div class="flaura-cart-price">EGP {{ grandTotal.toLocaleString() }}</div>
+    </div>
+    <button class="btn btn-sm flaura-view-cart-btn" routerLink="/cart">View Cart</button>
+  </div>
+</div>
+
+<!-- ── Hero Banners ── -->
+<!-- <section class="home-banners" *ngIf="activeBanners.length > 0">
+  <div class="banner-track">
+    <div class="banner-slide" *ngFor="let b of activeBanners">
+      <img [src]="b.imageUrl" [alt]="b.title" />
+      <div class="banner-overlay">
+        <h2>{{ b.title }}</h2>
+        <p>{{ b.subtitle }}</p>
+      </div>
+    </div>
+  </div>
+</section> -->
+
+<!-- ── Featured Products ── -->
+<section class="featured-section" *ngIf="featuredProducts.length > 0">
+  <div class="container">
+    <div class="section-head text-center">
+      <p class="flaura-section-sub">Handpicked For You</p>
+      <h3 class="flaura-category-title">Featured Pieces</h3>
+      <div class="flaura-divider mx-auto"></div>
+    </div>
+    <div class="featured-grid">
+      <div
+        class="featured-card"
+        *ngFor="let p of featuredProducts"
+        [routerLink]="['/Details', p._id]"
+      >
+        <div class="fc-img-wrap">
+          <img [src]="p.imgUrl" [alt]="p.name" />
+          <span class="fc-badge">Featured</span>
+        </div>
+        <div class="fc-body">
+          <div class="fc-name">{{ p.name }}</div>
+          <div class="fc-price">EGP {{ p.price.toLocaleString() }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     ── Tier 1 : Gender Selector ──
+     ══════════════════════════════════════════════════ -->
+<section class="flaura-gender-section py-4">
+  <div class="container">
+    <div class="d-flex justify-content-center gap-3">
+      @for (g of genderList; track g.id) {
+        <button
+          class="flaura-gender-tab"
+          [ngClass]="{ active: selectedGender === g.id }"
+          (click)="selectGender(g.id)"
+        >
+          {{ g.name }}
+        </button>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     ── Tier 2 : Category Tabs ──
+     ══════════════════════════════════════════════════ -->
+<section class="flaura-category-section py-5">
+  <div class="container">
+    <div class="text-center mb-4">
+      <p class="flaura-section-sub mb-2">Curated For You</p>
+      <h3 class="flaura-category-title">The Collection</h3>
+      <div class="flaura-divider mx-auto"></div>
+    </div>
+    <div class="d-flex justify-content-center flex-wrap">
+      @for (cat of catList; track cat.id) {
+        <button
+          class="flaura-category-tab"
+          [ngClass]="{ active: selectedCatId === cat.id }"
+          (click)="selectCategory(cat.id)"
+        >
+          {{ cat.name }}
+        </button>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ── Search & Filter Bar ── -->
+<section class="filter-bar-section">
+  <div class="container">
+    <div class="filter-bar">
+      <div class="filter-search">
+        <i class="bi bi-search"></i>
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="applyFilters()"
+          placeholder="Search products by name..."
+        />
+      </div>
+      <div class="filter-price">
+        <span class="filter-label">Price Range (EGP)</span>
+        <input
+          type="number"
+          [(ngModel)]="minPrice"
+          (ngModelChange)="applyFilters()"
+          placeholder="Min"
+        />
+        <span class="filter-sep">—</span>
+        <input
+          type="number"
+          [(ngModel)]="maxPrice"
+          (ngModelChange)="applyFilters()"
+          placeholder="Max"
+        />
+      </div>
+      <button
+        class="filter-clear"
+        (click)="clearFilters()"
+        *ngIf="searchTerm || minPrice !== null || maxPrice !== null"
+      >
+        <i class="bi bi-x-circle"></i> Clear
+      </button>
+    </div>
+    <div class="filter-results-info" *ngIf="searchTerm || minPrice !== null || maxPrice !== null">
+      Showing <strong>{{ filteredProducts.length }}</strong> result(s)
+    </div>
+  </div>
+</section>
+
+<!-- ── Products Section ── -->
+<section class="py-4">
+  <div class="container">
+    <div *ngIf="filteredProducts.length === 0" class="empty-filter-state">
+      <i class="bi bi-search"></i>
+      <p>No products match your search.</p>
+      <button (click)="clearFilters()">Clear Filters</button>
+    </div>
+    <app-products
+      *ngIf="filteredProducts.length > 0"
+      [recievedID]="selectedCatId"
+      [overrideProducts]="filteredProducts"
+      (total)="receiveTotal($event)"
+    >
+    </app-products>
+  </div>
+</section>

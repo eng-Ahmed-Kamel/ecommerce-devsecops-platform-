@@ -1,0 +1,8 @@
+:root {
+  --bg: #e8e0d8;
+  --ink: #2c2420;
+  --muted: #7a6e68;
+  --warm: #b8965a;
+  --h: 64px;
+}
+body { padding-top: 64px; background: var(--bg); }

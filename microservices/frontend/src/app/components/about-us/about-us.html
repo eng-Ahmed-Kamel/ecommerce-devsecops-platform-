@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About Us — Roselle</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Didact+Gothic&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root {
+      --bg:         #f7f0e9;
+      --alt:        #ede4d8;
+      --ink:        #1a110e;
+      --deep:       #2c1f1a;
+      --body-text:  #3d2a22;
+      --sub-text:   #5c4035;
+      --warm:       #b8853a;
+      --warm-mid:   #c9963f;
+      --accent:     #7a4f2e;
+      --border:     rgba(44,36,32,0.15);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Cormorant Garamond', serif;
+      overflow-x: hidden;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slowZoom {
+      from { transform: scale(1.05); }
+      to   { transform: scale(1.00); }
+    }
+
+    /* ── SHARED ────────────────────────────────────────────────── */
+    .sec-label {
+      font-family: 'Didact Gothic', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--warm);
+      margin-bottom: 18px;
+      display: block;
+    }
+    .sec-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(30px, 4vw, 50px);
+      font-weight: 600;
+      line-height: 1.2;
+      color: var(--deep);
+      margin-bottom: 20px;
+    }
+    .sec-title em {
+      font-style: italic;
+      font-weight: 400;
+      color: var(--accent);
+    }
+    .sec-body {
+      font-size: 17px;
+      font-weight: 400;
+      line-height: 1.9;
+      color: var(--body-text);
+    }
+    .ornament {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .ornament--center { margin: 0 auto; max-width: 280px; }
+    .ornament__line {
+      flex: 1; height: 1px;
+      background: linear-gradient(to right, transparent, var(--warm), transparent);
+    }
+    .ornament__diamond {
+      width: 8px; height: 8px;
+      background: var(--warm);
+      transform: rotate(45deg);
+      flex-shrink: 0;
+    }
+
+    /* ── HERO ─────────────────────────────────────────────────── */
+    .about-hero {
+      position: relative;
+      min-height: 88vh;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+      background: var(--alt);
+    }
+    .about-hero__bg {
+      position: absolute;
+      inset: 0;
+     background: url("/assets/images/slider33.jpg") center/cover no-repeat;
+      opacity: 0.18;
+      animation: slowZoom 16s ease-out forwards;
+    }
+    .about-hero::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 0; right: 0;
+      height: 120px;
+      background: var(--bg);
+      clip-path: polygon(0 100%, 100% 0, 100% 100%);
+    }
+    .about-hero__content {
+      position: relative;
+      z-index: 2;
+      padding: 0 60px 110px;
+      max-width: 860px;
+    }
+    .about-hero__eyebrow {
+      font-family: 'Didact Gothic', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--warm);
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.3s ease forwards;
+    }
+    .about-hero__title {
+      font-family: 'Pinyon Script', cursive;
+      font-size: clamp(72px, 10vw, 130px);
+      line-height: 0.9;
+      color: var(--deep);
+      margin-bottom: 28px;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.55s ease forwards;
+    }
+    .about-hero__sub {
+      font-size: 18px;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--body-text);
+      max-width: 540px;
+      line-height: 1.8;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.8s ease forwards;
+    }
+
+    /* ── INTRO SPLIT ──────────────────────────────────────────── */
+    .intro-section { padding: 100px 0 80px; }
+
+    .intro-image-wrap { position: relative; }
+    .intro-image-wrap img {
+      width: 100%; height: 580px;
+      object-fit: cover; display: block;
+    }
+    .intro-image-wrap::before {
+      content: '';
+      position: absolute;
+      top: -20px; left: -20px; right: 40px; bottom: 40px;
+      border: 1px solid var(--warm);
+      z-index: -1;
+    }
+    .intro-image-wrap::after {
+      content: '"';
+      font-family: 'Pinyon Script', cursive;
+      font-size: 200px;
+      color: var(--warm);
+      opacity: 0.12;
+      position: absolute;
+      bottom: -40px; right: -20px;
+      line-height: 1; z-index: 2;
+      pointer-events: none;
+    }
+    .intro-text {
+      display: flex; flex-direction: column;
+      justify-content: center;
+      padding: 20px 0 20px 50px;
+    }
+    .intro-text blockquote {
+      font-size: 21px; font-style: italic; font-weight: 600;
+      color: var(--deep);
+      line-height: 1.7;
+      border-left: 2px solid var(--warm);
+      padding-left: 28px;
+      margin: 30px 0;
+    }
+
+    /* ── NUMBERS ──────────────────────────────────────────────── */
+    .numbers-section {
+      padding: 80px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .number-item { text-align: center; padding: 20px; }
+    .number-item__val {
+      font-family: 'Pinyon Script', cursive;
+      font-size: 80px; line-height: 1;
+      color: var(--deep); display: block;
+    }
+    .number-item__label {
+      font-family: 'Didact Gothic', sans-serif;
+      font-size: 10px; letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--sub-text); margin-top: 8px;
+    }
+    .number-divider {
+      width: 1px; background: var(--border); align-self: stretch;
+    }
+
+    /* ── VALUES ───────────────────────────────────────────────── */
+    .values-section {
+      padding: 80px 0 100px;
+      background: var(--alt);
+      position: relative; overflow: hidden;
+    }
+    .values-section::before {
+      content: 'Roselle';
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Pinyon Script', cursive;
+      font-size: 280px;
+      color: rgba(44,36,32,0.04);
+      white-space: nowrap; pointer-events: none;
+    }
+    .value-card {
+      padding: 40px 32px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      height: 100%; position: relative;
+      transition: border-color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease;
+    }
+    .value-card:hover {
+      border-color: var(--warm);
+      transform: translateY(-6px);
+      box-shadow: 0 24px 60px rgba(44,36,32,0.1);
+    }
+    .value-card__icon {
+      font-size: 22px; color: var(--warm); margin-bottom: 22px;
+    }
+    .value-card__title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-weight: 600;
+      color: var(--deep); margin-bottom: 14px; letter-spacing: 0.04em;
+    }
+    .value-card__text {
+      font-size: 15px; font-weight: 400;
+      color: var(--body-text); line-height: 1.8;
+    }
+    .value-card::after {
+      content: '';
+      position: absolute; bottom: 0; left: 32px;
+      width: 0; height: 2px;
+      background: var(--warm); transition: width 0.4s ease;
+    }
+    .value-card:hover::after { width: calc(100% - 64px); }
+
+    /* ── STORY TIMELINE ───────────────────────────────────────── */
+    .story-section { padding: 100px 0; background: var(--alt); }
+    .timeline { position: relative; padding-left: 40px; }
+    .timeline::before {
+      content: '';
+      position: absolute; top: 0; bottom: 0; left: 8px; width: 1px;
+      background: linear-gradient(to bottom, transparent, var(--warm) 15%, var(--warm) 85%, transparent);
+    }
+    .timeline-item {
+      position: relative; margin-bottom: 48px;
+      opacity: 0; transform: translateX(-16px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .timeline-item.visible { opacity: 1; transform: translateX(0); }
+    .timeline-item::before {
+      content: '';
+      position: absolute; top: 6px; left: -36px;
+      width: 10px; height: 10px;
+      background: var(--warm); border-radius: 50%;
+      border: 2px solid var(--alt);
+      box-shadow: 0 0 0 1px var(--warm);
+    }
+    .timeline-item__year {
+      font-family: 'Didact Gothic', sans-serif; font-size: 10px;
+      letter-spacing: 0.26em; text-transform: uppercase;
+      color: var(--warm); margin-bottom: 6px;
+    }
+    .timeline-item__title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 23px; font-weight: 600;
+      color: var(--deep); margin-bottom: 8px;
+    }
+    .timeline-item__text {
+      font-size: 16px; font-weight: 400;
+      color: var(--body-text); line-height: 1.8;
+    }
+
+    /* ── TEAM ─────────────────────────────────────────────────── */
+    .team-section { padding: 100px 0; }
+    .team-card { position: relative; overflow: hidden; cursor: pointer; }
+    .team-card img {
+      width: 100%; height: 420px;
+      object-fit: cover; object-position: top; display: block;
+      transition: transform 0.7s cubic-bezier(0.4,0,0.2,1);
+      filter: grayscale(20%);
+    }
+    .team-card:hover img { transform: scale(1.07); filter: grayscale(0%); }
+    .team-card__overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(26,17,14,0.88) 0%, transparent 55%);
+      display: flex; flex-direction: column;
+      justify-content: flex-end; padding: 28px 24px;
+      opacity: 0; transition: opacity 0.45s ease;
+    }
+    .team-card:hover .team-card__overlay { opacity: 1; }
+    .team-card__info { padding: 18px 0 0; }
+    .team-card__name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-weight: 600; color: var(--deep);
+    }
+    .team-card__role {
+      font-family: 'Didact Gothic', sans-serif;
+      font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--warm); margin-top: 4px;
+    }
+    /* Quote is shown on dark image overlay — use warm gold for contrast */
+    .team-card__quote {
+      font-size: 14px; font-style: italic;
+      color: var(--warm-mid);
+      margin-top: 8px; line-height: 1.6;
+    }
+
+    /* ── CTA BANNER ───────────────────────────────────────────── */
+    .cta-banner {
+      padding: 110px 0;
+      background: var(--alt);
+      text-align: center;
+      position: relative; overflow: hidden;
+      border-top: 1px solid var(--border);
+    }
+    .cta-banner::before {
+      content: 'Roselle';
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Pinyon Script', cursive;
+      font-size: clamp(80px, 14vw, 180px);
+      color: rgba(44,36,32,0.05);
+      white-space: nowrap; pointer-events: none;
+    }
+    .cta-banner__eyebrow {
+      font-family: 'Didact Gothic', sans-serif; font-size: 10px;
+      letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--warm); margin-bottom: 20px;
+    }
+    .cta-banner__title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(32px, 4.5vw, 58px); font-weight: 600;
+      color: var(--deep); line-height: 1.25; margin-bottom: 36px;
+    }
+    .cta-banner__title em {
+      font-style: italic; font-weight: 400; color: var(--accent);
+    }
+    .btn-roselle {
+      font-family: 'Didact Gothic', sans-serif; font-size: 10px;
+      letter-spacing: 0.26em; text-transform: uppercase;
+      color: var(--bg); background: var(--deep);
+      padding: 16px 44px; border: none;
+      text-decoration: none; display: inline-block;
+      transition: background 0.3s, color 0.3s;
+    }
+    .btn-roselle:hover { background: var(--warm); color: var(--deep); }
+    .btn-roselle-outline {
+      background: transparent; color: var(--deep);
+      border: 1px solid var(--deep); margin-left: 14px;
+    }
+    .btn-roselle-outline:hover { background: var(--deep); color: var(--bg); }
+
+    @media (max-width: 768px) {
+      .about-hero__content { padding: 0 24px 100px; }
+      .intro-text { padding: 40px 0 0; }
+      .intro-image-wrap::before { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="about-hero">
+  <div class="about-hero__bg"></div>
+  <div class="about-hero__content">
+    <span class="about-hero__eyebrow">Est. 2018 · Alexandria, Egypt</span>
+    <h1 class="about-hero__title">Our Story</h1>
+    <p class="about-hero__sub">
+      Where timeless elegance meets the poetry of modern femininity — every thread tells a story.
+    </p>
+  </div>
+</section>
+
+<!-- INTRO SPLIT -->
+<section class="intro-section">
+  <div class="container-xxl px-4 px-md-5">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-5">
+        <div class="intro-image-wrap">
+          <img src="/assets/images/img11.jpg" alt="Roselle atelier" />
+        </div>
+      </div>
+      <div class="col-lg-7">
+        <div class="intro-text">
+          <span class="sec-label">Who We Are</span>
+          <h2 class="sec-title">Born from a Vision of <em>Enduring Beauty</em></h2>
+          <blockquote>
+            "Luxury is not about price — it is about the feeling a garment gives you
+            the moment you slip it on."
+          </blockquote>
+          <p class="sec-body">
+            Roselle was founded with a single conviction: that every woman deserves to feel
+            extraordinary in her everyday life. We are a modern luxury fashion house
+            headquartered in Alexandria, Egypt — a city where Mediterranean grace and
+            ancient grandeur have always coexisted.
+          </p>
+          <p class="sec-body mt-4">
+            Our ateliers source only the finest fabrics — French silks, Italian wools,
+            hand-embroidered Egyptian cotton — and every piece passes through the hands
+            of master tailors who bring decades of expertise to each stitch.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NUMBERS -->
+<section class="numbers-section">
+  <div class="container-xxl px-4 px-md-5">
+    <div class="d-flex flex-wrap justify-content-around align-items-center gap-3">
+      <div class="number-item">
+        <span class="number-item__val">7</span>
+        <p class="number-item__label">Years of Craft</p>
+      </div>
+      <div class="number-divider d-none d-md-block" style="height:80px;"></div>
+      <div class="number-item">
+        <span class="number-item__val">18</span>
+        <p class="number-item__label">Collections</p>
+      </div>
+      <div class="number-divider d-none d-md-block" style="height:80px;"></div>
+      <div class="number-item">
+        <span class="number-item__val">40+</span>
+        <p class="number-item__label">Master Artisans</p>
+      </div>
+      <div class="number-divider d-none d-md-block" style="height:80px;"></div>
+      <div class="number-item">
+        <span class="number-item__val">12k</span>
+        <p class="number-item__label">Happy Clients</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VALUES -->
+<section class="values-section">
+  <div class="container-xxl px-4 px-md-5">
+    <div class="text-center mb-5 pb-2">
+      <span class="sec-label">What We Stand For</span>
+      <h2 class="sec-title">Our <em>Pillars</em></h2>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-3">
+        <div class="value-card">
+          <div class="value-card__icon"><i class="fas fa-gem"></i></div>
+          <h3 class="value-card__title">Premium Quality</h3>
+          <p class="value-card__text">We use only the finest materials the world has to offer — selected for their texture, longevity, and the story they hold.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="value-card">
+          <div class="value-card__icon"><i class="fas fa-feather-alt"></i></div>
+          <h3 class="value-card__title">Timeless Design</h3>
+          <p class="value-card__text">Our silhouettes transcend seasons. We invest in elegance that will feel as relevant in twenty years as it does today.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="value-card">
+          <div class="value-card__icon"><i class="fas fa-leaf"></i></div>
+          <h3 class="value-card__title">Conscious Craft</h3>
+          <p class="value-card__text">Sustainability is woven into every decision — from responsible sourcing to zero-waste atelier practices.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="value-card">
+          <div class="value-card__icon"><i class="fas fa-heart"></i></div>
+          <h3 class="value-card__title">Personal Touch</h3>
+          <p class="value-card__text">Every client deserves a journey, not just a transaction. Our stylists curate experiences that feel deeply personal.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- CTA BANNER -->
+<section class="cta-banner">
+  <div class="container position-relative">
+    <p class="cta-banner__eyebrow">Ready to Experience Roselle?</p>
+    <h2 class="cta-banner__title">Discover the Current Collection<br /><em>crafted for you.</em></h2>
+    <a  routerLink="/Master" class="btn-roselle btn-roselle-outline">Shop Now</a>
+    <a routerLink="/Contact" class="btn-roselle btn-roselle-outline">Contact Us</a>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const items = document.querySelectorAll('.timeline-item');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 120);
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  items.forEach(item => io.observe(item));
+</script>
+</body>
+</html>

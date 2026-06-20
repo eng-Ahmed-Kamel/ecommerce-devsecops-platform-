@@ -1,0 +1,76 @@
+<header class="hdr" [class.scrolled]="isScrolled" [class.dark]="darkMode">
+  <div class="hdr-inner">
+
+    <!-- Brand -->
+    <a class="brand" routerLink="/" (click)="closeMenu()">Roselle</a>
+
+    <!-- Desktop Nav -->
+    <nav class="desk-nav">
+      <a class="lnk" routerLink="/Master">Home</a>
+      <a class="lnk" routerLink="/About">About</a>
+      <a class="lnk" routerLink="/Contact">Contact</a>
+    </nav>
+
+    <!-- Right slot -->
+    <div class="right-slot">
+
+      <!-- Dark mode toggle -->
+      <button class="theme-toggle icon-btn" (click)="toggleDark()" [title]="darkMode ? 'Switch to Light' : 'Switch to Dark'" aria-label="Toggle theme">
+        <i [class]="darkMode ? 'bi bi-sun-fill' : 'bi bi-moon-fill'"></i>
+      </button>
+
+      <!-- Wishlist -->
+      <a class="icon-btn" routerLink="/wishlist" aria-label="Wishlist">
+        <i class="bi bi-heart"></i>
+        <span class="bag-dot" *ngIf="wishlistCount > 0">{{ wishlistCount }}</span>
+      </a>
+
+      <!-- Cart -->
+      <a class="icon-btn" routerLink="/cart" aria-label="Cart">
+        <i class="bi bi-bag"></i>
+        <span class="bag-dot" *ngIf="cartCount > 0">{{ cartCount }}</span>
+      </a>
+
+      <!-- Guest -->
+      <ng-container *ngIf="!isLoggedIn">
+        <a class="cta-btn" routerLink="/login">Sign In</a>
+      </ng-container>
+
+      <!-- Logged in -->
+      <ng-container *ngIf="isLoggedIn">
+        <div class="user-menu" (click)="userMenuOpen = !userMenuOpen">
+          <div class="user-avatar">
+            <i class="bi bi-person-fill"></i>
+          </div>
+          <div class="user-dropdown" [class.open]="userMenuOpen">
+            <div class="user-dropdown-name">{{ currentUser?.name }}</div>
+            <a routerLink="/profile"      (click)="userMenuOpen=false"><i class="bi bi-person me-2"></i>My Profile</a>
+            <a routerLink="/wishlist"     (click)="userMenuOpen=false"><i class="bi bi-heart me-2"></i>Wishlist</a>
+            <a routerLink="/order-history"(click)="userMenuOpen=false"><i class="bi bi-clock-history me-2"></i>Order History</a>
+            <a routerLink="/cart"         (click)="userMenuOpen=false"><i class="bi bi-bag me-2"></i>Cart</a>
+            <a *ngIf="isAdmin" routerLink="/admin" (click)="userMenuOpen=false"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+            <button (click)="logout()"><i class="bi bi-box-arrow-right me-2"></i>Sign Out</button>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- Mobile toggle -->
+      <button class="toggle" [class.open]="menuOpen" (click)="menuOpen = !menuOpen" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+  </div>
+</header>
+
+<!-- Mobile Drawer -->
+<nav class="drawer" [class.open]="menuOpen" [class.dark]="darkMode">
+  <a class="lnk" routerLink="/Master"        (click)="closeMenu()">Home</a>
+  <a class="lnk" routerLink="/About"         (click)="closeMenu()">About</a>
+  <a class="lnk" routerLink="/Contact"       (click)="closeMenu()">Contact</a>
+  <a class="lnk" routerLink="/wishlist"      (click)="closeMenu()">Wishlist</a>
+  <a class="lnk" routerLink="/cart"          (click)="closeMenu()">Cart</a>
+  <a class="lnk" routerLink="/profile"       (click)="closeMenu()" *ngIf="isLoggedIn">My Profile</a>
+  <a class="lnk" routerLink="/login"         (click)="closeMenu()" *ngIf="!isLoggedIn">Sign In</a>
+  <a class="lnk" routerLink="/admin"         (click)="closeMenu()" *ngIf="isAdmin">Admin Dashboard</a>
+</nav>
