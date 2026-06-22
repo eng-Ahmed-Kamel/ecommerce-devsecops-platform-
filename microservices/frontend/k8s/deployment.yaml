@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ecommerce-frontend
+  namespace: ecommerce
+  labels:
+    app: ecommerce-frontend
+    tier: frontend
+    version: v1
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: ecommerce-frontend
+  template:
+    metadata:
+      labels:
+        app: ecommerce-frontend
+        tier: frontend
+        version: v1
+    spec:
+      # Spread pods across different nodes
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - ecommerce-frontend
+                topologyKey: kubernetes.io/hostname
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        fsGroup: 101
+      containers:
+        - name: frontend
+          image: ecommerce-frontend:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          volumeMounts:
+            # Mount PVC for persistent assets (optional - for user uploads etc.)
+            - name: assets-volume
+              mountPath: /usr/share/nginx/html/assets/user-uploads
+            # Mount custom nginx config
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
+      volumes:
+        - name: assets-volume
+          persistentVolumeClaim:
+            claimName: ecommerce-assets-pvc
+        - name: nginx-config
+          configMap:
+            name: ecommerce-nginx-config
+            items:
+              - key: nginx.conf
+                path: default.conf
+      # Ensure we can schedule on nodes with local-storage PV
+      nodeSelector:
+        node-type: worker

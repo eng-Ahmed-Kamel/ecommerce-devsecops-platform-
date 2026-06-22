@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ecommerce-frontend
+  namespace: ecommerce
+  labels:
+    app: ecommerce-frontend
+spec:
+  type: ClusterIP
+  selector:
+    app: ecommerce-frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP

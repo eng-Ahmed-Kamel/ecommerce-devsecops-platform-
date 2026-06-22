@@ -1,0 +1,50 @@
+Before You Deploy
+1. Update Node Hostnames
+In pv-node1.yaml and pv-node2.yaml, replace:
+yaml
+values:
+  - ip-10-0-1-10   # <-- Your actual Node 1 hostname
+Get your node names:
+bash
+kubectl get nodes -o wide
+2. Run Setup on Each Node
+bash
+# SSH into Node 1
+bash setup-nodes.sh
+
+# SSH into Node 2
+bash setup-nodes.sh
+3. Deploy
+bash
+bash deploy.sh
+Architecture
+plain
+┌─────────────────────────────────────────┐
+│           NGINX Ingress Controller       │
+│         (LoadBalancer / NodePort)        │
+└─────────────┬───────────────────────────┘
+              │
+┌─────────────▼───────────────────────────┐
+│      Service: ecommerce-frontend        │
+│              ClusterIP                  │
+└─────────────┬───────────────────────────┘
+              │
+    ┌─────────┴─────────┐
+    ▼                   ▼
+┌─────────┐       ┌─────────┐
+│  Pod 1  │       │  Pod 2  │
+│(Node 1) │       │(Node 2) │
+│         │       │         │
+│ hostPath│       │ hostPath│
+│ /opt/...│       │ /opt/...│
+└─────────┘       └─────────┘
+Access After Deploy
+bash
+# Get Ingress Controller IP
+kubectl get svc -n ingress-nginx
+
+# Add to /etc/hosts
+<INGRESS_IP> ecommerce.local
+
+# Open browser
+http://ecommerce.local
