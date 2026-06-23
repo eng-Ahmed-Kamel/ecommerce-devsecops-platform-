@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: production
+    container_name: ecommerce-backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    # Load from .env first, then override only what's needed
+    env_file:
+      - ../.env
+    environment:
+      # Ensure PORT matches what your app expects
+      - PORT=3000
+      - NODE_ENV=production
+      # Don't override MONGO_URI here - let .env handle it
+      # Don't set MONGODB_URI unless your code uses that name
+    # Remove depends_on mongo since you're using Atlas
+    networks:
+      - ecommerce-network
+    healthcheck:
+      # Use simpler healthcheck (curl is more reliable)
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+  
+  frontend:
+    image: oziii/ecommerce-frontend:v6
+    container_name: ecommerce-frontend
+    ports:
+      - "8080:80"
+    networks:
+      - ecommerce-network
+    depends_on:
+      - backend
+networks:
+  ecommerce-network:
+    driver: bridge
