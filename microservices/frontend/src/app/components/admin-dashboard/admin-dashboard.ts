@@ -76,7 +76,7 @@ const ORDER_STATUSES = ['pending', 'processing', 'shipped', 'delivered', 'cancel
 })
 export class AdminDashboard implements OnInit, OnDestroy {
   private sub!: Subscription;
-  private readonly apiUrl = 'http://localhost:3000/api';
+  private readonly apiUrl = '/api';
 
   // Toast notifications
   toasts: { id: number; message: string; type: 'success' | 'error' | 'info' }[] = [];

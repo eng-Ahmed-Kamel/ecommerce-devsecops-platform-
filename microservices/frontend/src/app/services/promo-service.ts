@@ -24,7 +24,7 @@ export interface IPromoApplyResponse {
 
 @Injectable({ providedIn: 'root' })
 export class PromoService {
-  private readonly base = 'http://localhost:3000/api/promo';
+  private readonly base = '/api/promo';
 
   constructor(private http: HttpClient) {}
 

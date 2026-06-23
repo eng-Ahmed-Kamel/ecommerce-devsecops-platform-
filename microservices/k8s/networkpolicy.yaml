@@ -1,0 +1,94 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ecommerce-frontend-netpol
+  namespace: ecommerce
+spec:
+  podSelector:
+    matchLabels:
+      app: ecommerce-frontend
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 80
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ecommerce
+      ports:
+        - protocol: TCP
+          port: 80
+  egress:
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 80
+    # Allow frontend to reach backend
+    - to:
+        - podSelector:
+            matchLabels:
+              app: ecommerce-backend
+      ports:
+        - protocol: TCP
+          port: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ecommerce-backend-netpol
+  namespace: ecommerce
+spec:
+  podSelector:
+    matchLabels:
+      app: ecommerce-backend
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow from frontend
+    - from:
+        - podSelector:
+            matchLabels:
+              app: ecommerce-frontend
+      ports:
+        - protocol: TCP
+          port: 3000
+    # Allow from ingress
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 3000
+  egress:
+    # DNS
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+    # MongoDB Atlas (HTTPS)
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443
+    # Stripe API
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443

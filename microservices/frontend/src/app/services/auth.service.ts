@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-export const BaseUrl: string = 'http://localhost:3000';
+export const BaseUrl: string = '';
 
 
 export interface IUser {
@@ -199,12 +199,12 @@ export class AuthService {
   resendotp() {
     const e = this._pendingEmail();
     if (!e) throw new Error('No pending email found');
-    return this.http.post(`http://localhost:3000/api/user/resend_otp`, { email: e });
+    return this.http.post(`/api/user/resend_otp`, { email: e });
   }
 
 
     logout() {
-  return this.http.get(`http://localhost:3000/api/user/logout`, { withCredentials: true });
+  return this.http.get(`/api/user/logout`, { withCredentials: true });
 }
   
 
@@ -213,7 +213,7 @@ export class AuthService {
   }
 
    forget_pass(otp:string,new_password:string,email:string){
-    return this.http.post(`http://localhost:3000/api/user/forget_password`, { email,otp,new_password });
+    return this.http.post(`/api/user/forget_password`, { email,otp,new_password });
    }
   sendPasswordReset(email: string): boolean {
     const user = this.users.find((u) => u.email === email);

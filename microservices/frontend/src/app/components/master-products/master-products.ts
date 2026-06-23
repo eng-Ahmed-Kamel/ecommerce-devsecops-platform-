@@ -279,7 +279,7 @@ export class MasterProducts implements OnInit, OnDestroy {
 
   filteredProducts: IProduct[] = [];
 
-  private readonly apiUrl = 'http://localhost:3000/api';
+  private readonly apiUrl = '/api';
   private _sub!: Subscription;
 
   constructor(

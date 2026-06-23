@@ -82,7 +82,7 @@ export class Profile implements OnInit {
     });
 
     // 2. Load Wishlist (Favorites) Counter directly from your API
-    this.http.get('http://localhost:3000/api/products/getFavourites').subscribe({
+    this.http.get('/api/products/getFavourites').subscribe({
       next: (res: any) => {
         // Grab the count straight from the "results" property in your JSON,
         // or fallback to the length of the "data" array just in case

@@ -23,7 +23,6 @@ export interface IProductPayload {
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
-  // Use relative URL so Docker/K8s can route /api to the backend via ingress/proxy
   private baseUrl = '/api/products';
 
   constructor(private http: HttpClient) {}

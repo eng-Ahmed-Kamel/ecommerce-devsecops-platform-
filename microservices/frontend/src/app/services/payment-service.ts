@@ -10,7 +10,7 @@ import { Injectable } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class PaymentService {
-  private readonly BASE = 'http://localhost:3000/api/payment';
+  private readonly BASE = '/api/payment';
 
   constructor(private http: HttpClient) {}
 

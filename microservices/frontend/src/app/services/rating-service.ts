@@ -18,7 +18,7 @@ export interface IReview {
 
 @Injectable({ providedIn: 'root' })
 export class RatingService {
-  private readonly base = 'http://localhost:3000/api/products';
+  private readonly base = '/api/products';
 
   constructor(private http: HttpClient) {}
 

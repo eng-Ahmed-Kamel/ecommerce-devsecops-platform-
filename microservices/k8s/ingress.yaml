@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ecommerce-ingress
+  namespace: ecommerce
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+    - hosts:
+        - your-domain.com
+      secretName: ecommerce-tls
+  rules:
+    - host: your-domain.com
+      http:
+        paths:
+          # Backend API routes first (more specific)
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: ecommerce-backend
+                port:
+                  number: 3000
+          # Frontend (catch-all)
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ecommerce-frontend
+                port:
+                  number: 80

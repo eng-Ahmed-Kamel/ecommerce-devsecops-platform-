@@ -10,7 +10,7 @@ export interface ICartItem extends IProduct {
 @Injectable({ providedIn: 'root' })
 export class CartService {
   private cartItems: ICartItem[] = [];
-  private readonly base = 'http://localhost:3000/api/cart';
+  private readonly base = '/api/cart';
 
   constructor(private http: HttpClient) {}
 

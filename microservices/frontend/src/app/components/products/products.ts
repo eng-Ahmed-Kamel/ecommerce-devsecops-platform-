@@ -25,7 +25,7 @@ import { WishlistService } from '../../services/wishlist.service';
   standalone: true,
   imports: [CommonModule, NgClass, CalcPipe, HighlightCard, RouterLink, RouterLinkActive],
   templateUrl: './products.html',
-  styleUrls: ['./products.css'],
+  styleUrl: './products.css',
 })
 export class Products implements OnInit, OnChanges, OnDestroy {
   @Input() recievedID: number = 0;
