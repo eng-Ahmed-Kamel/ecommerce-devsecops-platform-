@@ -95,3 +95,4 @@ test-results/
 *.tmp
 *.temp
 .cache/
+microservices/k8s/secrets.yaml
