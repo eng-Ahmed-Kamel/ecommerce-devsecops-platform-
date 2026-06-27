@@ -1,0 +1,123 @@
+# ============================================
+# Global
+# ============================================
+
+namespace:
+  create: true
+  name: ecommerce
+
+# ============================================
+# Images
+# ============================================
+
+images:
+
+  backend:
+    repository: oziii/ecommerce-backend
+    tag: k8s-v1
+    pullPolicy: IfNotPresent
+  frontend:
+    repository: oziii/ecommerce-frontend
+    tag: k8s-v1
+    pullPolicy: IfNotPresent
+
+# ============================================
+# Backend
+# ============================================
+
+backend:
+  replicaCount: 2
+  port: 3000
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  livenessProbe:
+    path: /health
+    initialDelaySeconds: 40
+    periodSeconds: 30
+  readinessProbe:
+    path: /health
+    initialDelaySeconds: 10
+    periodSeconds: 5
+
+# ============================================
+# Frontend
+# ============================================
+
+frontend:
+  replicaCount: 2
+  port: 80
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "250m"
+  livenessProbe:
+    path: /health
+    initialDelaySeconds: 10
+    periodSeconds: 30
+  readinessProbe:
+    path: /health
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+# ============================================
+#  Ingress - NGINX Ingress Controller
+# ============================================
+#
+ingress:
+  enabled: true
+  className: nginx          
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  host: ""
+
+
+# ============================================
+# HPA
+# ============================================
+
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilization: 70
+  targetMemoryUtilization: 80
+  scaleDown:
+    stabilizationWindowSeconds: 300
+    policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60
+  scaleUp:
+    stabilizationWindowSeconds: 0
+    policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      - type: Pods
+        value: 4
+        periodSeconds: 15
+    selectPolicy: Max
+
+# ============================================
+# Network Policy
+# ============================================
+networkPolicy:
+  enabled: true
+
+# ============================================
+# Secrets (use external secret management in production!)
+# ============================================
+secrets:
+  create: false  # Sealed Secret creates it automatically

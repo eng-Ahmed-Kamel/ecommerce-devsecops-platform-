@@ -1,0 +1,20 @@
+cd /home/ozi/ecommerce-devsecops-platform/helm-charts/ecommerce
+
+# Lint
+helm lint .
+
+# Dry run
+helm template ecommerce . --namespace ecommerce | head -100
+
+# Install/Upgrade
+helm upgrade --install ecommerce . --namespace ecommerce --create-namespace
+
+# With dev values
+helm upgrade --install ecommerce-dev . -f values/values-dev.yaml --namespace ecommerce-dev --create-namespace
+
+# With prod values
+helm upgrade --install ecommerce-prod . -f values/values-prod.yaml --namespace ecommerce-prod --create-namespace
+
+# Verify
+helm list -A
+kubectl get pods -n ecommerce

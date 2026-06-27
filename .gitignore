@@ -96,3 +96,8 @@ test-results/
 *.temp
 .cache/
 microservices/k8s/secrets.yaml
+
+# ─── Helm Secrets ───
+raw-secret.yaml
+*.unencrypted.yaml
+EOF
