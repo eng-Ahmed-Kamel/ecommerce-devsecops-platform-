@@ -470,9 +470,12 @@ DevOps | Cloud | Kubernetes | AWS | Linux
 
 LinkedIn:
 *(https://www.linkedin.com/in/eng--ahmed-kamel/)*
+*(https://www.linkedin.com/in/omar-hesham2002/)*
 
 GitHub:
 *(https://github.com/eng-Ahmed-Kamel)*
+*(https://github.com/OmarHesham249)*
+
 
 ---
 
