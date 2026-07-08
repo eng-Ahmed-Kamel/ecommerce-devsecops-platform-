@@ -176,26 +176,19 @@ pipeline {
 
         stage('Verify Deployment') {
 
-            steps {
-
-                sh '''
-
-                kubectl get pods -n ${K8S_NAMESPACE}
-
-                kubectl rollout status \
-                deployment/backend \
-                -n ${K8S_NAMESPACE}
-
-
-                kubectl rollout status \
-                deployment/frontend \
-                -n ${K8S_NAMESPACE}
-
-
-                '''
-            }
-        }
-
+               steps {
+                    sh '''
+                    kubectl get pods -n ${K8S_NAMESPACE}
+            
+                    kubectl rollout status deployment/ecommerce-backend \
+                    -n ${K8S_NAMESPACE} \
+                    --timeout=5m
+            
+                    kubectl rollout status deployment/ecommerce-frontend \
+                    -n ${K8S_NAMESPACE} \
+                    --timeout=5m
+                    '''
+                }
     }
 
 
