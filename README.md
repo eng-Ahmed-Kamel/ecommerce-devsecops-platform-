@@ -460,11 +460,11 @@ Throughout this project, I gained practical experience with:
 
 ---
 
-# 👨‍💻 Author
+# 👨‍💻 Authors
 
-Ahmed Kamel
+Ahmed Kamel and Omar Hesham
 
-DevOps Engineer
+DevOps Engineers
 
 DevOps | Cloud | Kubernetes | AWS | Linux
 
