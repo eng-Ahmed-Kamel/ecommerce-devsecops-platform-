@@ -167,16 +167,16 @@ pipeline {
                     export KUBECONFIG=$KUBECONFIG
 
 
-                    helm upgrade --install ${HELM_RELEASE} ${HELM_CHART} \
-                    --namespace ${K8S_NAMESPACE} \
+                    helm upgrade --install ecommerce \
+                    ./helm-charts/ecommerce \
+                    --namespace ecommerce \
                     --create-namespace \
-                    --set backend.image.repository=${DOCKER_REGISTRY}/${BACKEND_IMAGE} \
+                    --set backend.image.repository=docker.io/oziii/ecommerce-backend \
                     --set backend.image.tag=${BUILD_NUMBER} \
-                    --set frontend.image.repository=${DOCKER_REGISTRY}/${FRONTEND_IMAGE} \
+                    --set frontend.image.repository=docker.io/oziii/ecommerce-frontend \
                     --set frontend.image.tag=${BUILD_NUMBER} \
                     --wait \
                     --timeout 5m
-
 
                     '''
                 }
