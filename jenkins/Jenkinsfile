@@ -152,35 +152,22 @@ pipeline {
 
         stage('Deploy With Helm') {
 
+           
             steps {
-
-                withCredentials([
-                    file(
-                        credentialsId: "${KUBECONFIG_CREDENTIALS}",
-                        variable: 'KUBECONFIG'
-                    )
-                ]) {
-
-
-                    sh '''
-
-                    export KUBECONFIG=$KUBECONFIG
-
-
-                    helm upgrade --install ecommerce \
-                    ./helm-charts/ecommerce \
-                    --namespace ecommerce \
-                    --create-namespace \
-                    --set backend.image.repository=docker.io/oziii/ecommerce-backend \
-                    --set backend.image.tag=${BUILD_NUMBER} \
-                    --set frontend.image.repository=docker.io/oziii/ecommerce-frontend \
-                    --set frontend.image.tag=${BUILD_NUMBER} \
-                    --wait \
-                    --timeout 5m
-
-                    '''
+        
+                sh '''
+                helm upgrade --install ecommerce \
+                ./helm-charts/ecommerce \
+                --namespace ecommerce \
+                --create-namespace \
+                --set backend.image.repository=docker.io/oziii/ecommerce-backend \
+                --set backend.image.tag=${BUILD_NUMBER} \
+                --set frontend.image.repository=docker.io/oziii/ecommerce-frontend \
+                --set frontend.image.tag=${BUILD_NUMBER} \
+                --wait \
+                --timeout 5m
+                '''
                 }
-            }
         }
 
 
