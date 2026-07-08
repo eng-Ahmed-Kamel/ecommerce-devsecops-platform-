@@ -4,18 +4,14 @@ metadata:
   name: ecommerce-ingress
   namespace: ecommerce
   annotations:
-    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /health
 spec:
-  tls:
-    - hosts:
-        - your-domain.com
-      secretName: ecommerce-tls
+  ingressClassName: alb
   rules:
-    - host: your-domain.com
-      http:
+    - http:
         paths:
-          # Backend API routes first (more specific)
           - path: /api
             pathType: Prefix
             backend:
@@ -23,7 +19,7 @@ spec:
                 name: ecommerce-backend
                 port:
                   number: 3000
-          # Frontend (catch-all)
+
           - path: /
             pathType: Prefix
             backend:
@@ -31,3 +27,4 @@ spec:
                 name: ecommerce-frontend
                 port:
                   number: 80
+

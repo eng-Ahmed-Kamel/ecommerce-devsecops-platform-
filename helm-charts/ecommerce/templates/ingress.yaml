@@ -9,8 +9,13 @@ metadata:
     {{ $key }}: {{ $value | quote }}
     {{- end }}
 spec:
+  ingressClassName: {{ .Values.ingress.className }}
   rules:
+    {{- if .Values.ingress.host }}
     - host: {{ .Values.ingress.host }}
+    {{- else }}
+    - http:
+    {{- end }}
       http:
         paths:
           - path: /api

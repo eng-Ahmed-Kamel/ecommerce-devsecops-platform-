@@ -5,10 +5,6 @@ namespace: ecommerce
 
 resources:
   - namespace.yaml
-  - storageclass.yaml
-  - pv-node1.yaml
-  - pv-node2.yaml
-  - pvc.yaml
   - secrets.yaml
   - configmap.yaml
   - backend-deployment.yaml

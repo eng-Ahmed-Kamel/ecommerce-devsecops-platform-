@@ -10,11 +10,6 @@ echo "========================================"
 # 1. Create namespace
 kubectl apply -f namespace.yaml
 
-# 2. Setup storage
-kubectl apply -f storageclass.yaml
-kubectl apply -f pv-node1.yaml
-kubectl apply -f pv-node2.yaml
-kubectl apply -f pvc.yaml
 
 # 3. Setup ConfigMap
 kubectl apply -f configmap.yaml

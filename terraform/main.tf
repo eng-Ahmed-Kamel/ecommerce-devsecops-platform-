@@ -13,6 +13,10 @@ terraform {
       source  = "hashicorp/helm"
       version = "~> 2.11"
     }
+    time = {
+      source  = "hashicorp/time"
+      version = "~> 0.9"
+    }
   }
   backend "local" {
     path = "terraform.tfstate"
@@ -40,7 +44,6 @@ module "vpc" {
   enable_dns_hostnames   = true
   enable_dns_support     = true
 
-  # Tag subnets for load balancer discovery
   public_subnet_tags = {
     "kubernetes.io/role/elb"                      = "1"
     "kubernetes.io/cluster/${var.project_name}-${var.environment}" = "shared"
@@ -76,7 +79,7 @@ module "eks" {
   version = "~> 20.0"
 
   cluster_name    = "${var.project_name}-${var.environment}"
-  cluster_version = "1.29"
+  cluster_version = "1.32"
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
@@ -89,7 +92,6 @@ module "eks" {
     resources      = ["secrets"]
   }
 
-  # EKS Managed Add-ons
   cluster_addons = {
     coredns = {
       most_recent = true
@@ -142,10 +144,27 @@ module "eks" {
     }
   }
 
-  # Enable IRSA for service accounts
   enable_irsa = true
 
+  # Grants the IAM identity running Terraform (cluster creator) an EKS
+  # access entry with admin permissions on the cluster's Kubernetes API.
+  # Without this, kubernetes/helm provider calls get "Unauthorized".
+  enable_cluster_creator_admin_permissions = true
+
   tags = var.common_tags
+}
+
+# Wait for cluster to be fully ready before deploying Helm/K8s resources
+resource "time_sleep" "wait_for_cluster" {
+  depends_on      = [module.eks]
+  create_duration = "60s"
+}
+
+# Data source to get cluster auth AFTER it's ready
+data "aws_eks_cluster_auth" "this" {
+  name = module.eks.cluster_name
+
+  depends_on = [time_sleep.wait_for_cluster]
 }
 
 # IRSA for EBS CSI Driver
@@ -241,42 +260,37 @@ module "cert_manager_irsa" {
   tags = var.common_tags
 }
 
-# Security Group for EKS cluster additional rules
-resource "aws_security_group_rule" "cluster_ingress_nodes" {
-  type                     = "ingress"
-  from_port                = 443
-  to_port                  = 443
-  protocol                 = "tcp"
-  source_security_group_id = module.eks.node_security_group_id
-  security_group_id        = module.eks.cluster_security_group_id
-  description              = "Allow nodes to communicate with the cluster API Server"
-}
+# ============================================================
+# KUBERNETES & HELM PROVIDERS (with proper auth)
+# ============================================================
 
-# ============================================================
-# HELM RELEASES FOR ESSENTIAL ADD-ONS
-# ============================================================
+provider "kubernetes" {
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "aws"
+    args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name, "--region", var.aws_region]
+  }
+}
 
 provider "helm" {
   kubernetes {
     host                   = module.eks.cluster_endpoint
     cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+
     exec {
       api_version = "client.authentication.k8s.io/v1beta1"
       command     = "aws"
-      args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
+      args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name, "--region", var.aws_region]
     }
   }
 }
 
-provider "kubernetes" {
-  host                   = module.eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-  exec {
-    api_version = "client.authentication.k8s.io/v1beta1"
-    command     = "aws"
-    args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
-  }
-}
+# ============================================================
+# HELM RELEASES FOR ESSENTIAL ADD-ONS
+# ============================================================
 
 # AWS Load Balancer Controller
 resource "helm_release" "aws_load_balancer_controller" {
@@ -302,7 +316,7 @@ resource "helm_release" "aws_load_balancer_controller" {
   }
 
   set {
-    name  = "serviceAccount.annotations.eks\.amazonaws\.com/role-arn"
+    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
     value = module.aws_load_balancer_controller_irsa.iam_role_arn
   }
 
@@ -316,7 +330,7 @@ resource "helm_release" "aws_load_balancer_controller" {
     value = var.aws_region
   }
 
-  depends_on = [module.eks]
+  depends_on = [data.aws_eks_cluster_auth.this]
 }
 
 # Cluster Autoscaler
@@ -348,7 +362,7 @@ resource "helm_release" "cluster_autoscaler" {
   }
 
   set {
-    name  = "rbac.serviceAccount.annotations.eks\.amazonaws\.com/role-arn"
+    name  = "rbac.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
     value = module.cluster_autoscaler_irsa.iam_role_arn
   }
 
@@ -377,7 +391,7 @@ resource "helm_release" "cluster_autoscaler" {
     value = "2m"
   }
 
-  depends_on = [module.eks]
+  depends_on = [data.aws_eks_cluster_auth.this]
 }
 
 # Metrics Server (for HPA support)
@@ -393,7 +407,7 @@ resource "helm_release" "metrics_server" {
     value = "--kubelet-insecure-tls"
   }
 
-  depends_on = [module.eks]
+  depends_on = [data.aws_eks_cluster_auth.this]
 }
 
 # ============================================================
@@ -409,7 +423,7 @@ resource "kubernetes_namespace" "monitoring" {
     }
   }
 
-  depends_on = [module.eks]
+  depends_on = [data.aws_eks_cluster_auth.this]
 }
 
 # Prometheus + Grafana via kube-prometheus-stack
@@ -432,3 +446,4 @@ resource "helm_release" "kube_prometheus_stack" {
 
   depends_on = [kubernetes_namespace.monitoring, helm_release.aws_load_balancer_controller]
 }
+

@@ -1,142 +1,244 @@
 pipeline {
     agent any
+
     environment {
         DOCKER_REGISTRY = 'docker.io/oziii'
+
         BACKEND_IMAGE = 'ecommerce-backend'
         FRONTEND_IMAGE = 'ecommerce-frontend'
+
         K8S_NAMESPACE = 'ecommerce'
         HELM_RELEASE = 'ecommerce'
-        // Add Docker credentials ID (configure in Jenkins Credentials)
+
         DOCKER_CREDENTIALS = 'docker-hub-credentials'
-        // Add kubeconfig credential ID for K8s deployment
         KUBECONFIG_CREDENTIALS = 'kubeconfig'
+
+        HELM_CHART = './helm-charts/ecommerce'
     }
+
+
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-        
+
         stage('Security Scan - Dependencies') {
             parallel {
+
                 stage('Backend Audit') {
                     steps {
                         dir('microservices/backend') {
-                            sh 'npm audit --audit-level=moderate || true'
+                            sh '''
+                            npm ci
+                            npm audit --audit-level=high || true
+                            '''
                         }
                     }
                 }
+
+
                 stage('Frontend Audit') {
                     steps {
                         dir('microservices/frontend') {
-                            sh 'npm audit --audit-level=moderate || true'
+                            sh '''
+                            npm ci
+                            npm audit --audit-level=high || true
+                            '''
                         }
                     }
                 }
             }
         }
-        
-        stage('Build Images') {
+
+
+
+        stage('Build Docker Images') {
+
             parallel {
+
                 stage('Backend') {
                     steps {
                         dir('microservices/backend') {
+
                             sh '''
-                                docker build -t ${DOCKER_REGISTRY}/${BACKEND_IMAGE}:${BUILD_NUMBER} .
-                                docker tag ${DOCKER_REGISTRY}/${BACKEND_IMAGE}:${BUILD_NUMBER} ${DOCKER_REGISTRY}/${BACKEND_IMAGE}:latest
+                            docker build \
+                            -f docker/Dockerfile \
+                            -t ${DOCKER_REGISTRY}/${BACKEND_IMAGE}:${BUILD_NUMBER} \
+                            -t ${DOCKER_REGISTRY}/${BACKEND_IMAGE}:latest .
                             '''
                         }
                     }
                 }
+
+
+
                 stage('Frontend') {
+
                     steps {
+
                         dir('microservices/frontend') {
+
                             sh '''
-                                docker build -t ${DOCKER_REGISTRY}/${FRONTEND_IMAGE}:${BUILD_NUMBER} .
-                                docker tag ${DOCKER_REGISTRY}/${FRONTEND_IMAGE}:${BUILD_NUMBER} ${DOCKER_REGISTRY}/${FRONTEND_IMAGE}:latest
+                            docker build \
+                            -t ${DOCKER_REGISTRY}/${FRONTEND_IMAGE}:${BUILD_NUMBER} \
+                            -t ${DOCKER_REGISTRY}/${FRONTEND_IMAGE}:latest .
                             '''
                         }
                     }
                 }
             }
         }
-        
-        stage('Security Scan - Images') {
+
+
+
+
+        stage('Trivy Image Scan') {
+
             steps {
+
                 sh '''
-                    trivy image --severity HIGH,CRITICAL --exit-code 0 ${DOCKER_REGISTRY}/${BACKEND_IMAGE}:${BUILD_NUMBER}
-                    trivy image --severity HIGH,CRITICAL --exit-code 0 ${DOCKER_REGISTRY}/${FRONTEND_IMAGE}:${BUILD_NUMBER}
+
+                trivy image \
+                --severity HIGH,CRITICAL \
+                --exit-code 0 \
+                ${DOCKER_REGISTRY}/${BACKEND_IMAGE}:${BUILD_NUMBER}
+
+
+                trivy image \
+                --severity HIGH,CRITICAL \
+                --exit-code 0 \
+                ${DOCKER_REGISTRY}/${FRONTEND_IMAGE}:${BUILD_NUMBER}
+
                 '''
             }
         }
-        
-        stage('Push Images') {
+
+
+
+
+        stage('Push Docker Images') {
+
             steps {
-                withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: "${DOCKER_CREDENTIALS}",
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )
+                ]) {
+
+
                     sh '''
-                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin ${DOCKER_REGISTRY}
-                        docker push ${DOCKER_REGISTRY}/${BACKEND_IMAGE}:${BUILD_NUMBER}
-                        docker push ${DOCKER_REGISTRY}/${BACKEND_IMAGE}:latest
-                        docker push ${DOCKER_REGISTRY}/${FRONTEND_IMAGE}:${BUILD_NUMBER}
-                        docker push ${DOCKER_REGISTRY}/${FRONTEND_IMAGE}:latest
+
+                    echo "$DOCKER_PASS" | docker login \
+                    -u "$DOCKER_USER" \
+                    --password-stdin
+
+
+                    docker push ${DOCKER_REGISTRY}/${BACKEND_IMAGE}:${BUILD_NUMBER}
+                    docker push ${DOCKER_REGISTRY}/${BACKEND_IMAGE}:latest
+
+
+                    docker push ${DOCKER_REGISTRY}/${FRONTEND_IMAGE}:${BUILD_NUMBER}
+                    docker push ${DOCKER_REGISTRY}/${FRONTEND_IMAGE}:latest
+
+
                     '''
                 }
             }
         }
-        
-        stage('Deploy to Kubernetes') {
+
+
+
+
+
+        stage('Deploy With Helm') {
+
             steps {
-                withCredentials([file(credentialsId: "${KUBECONFIG_CREDENTIALS}", variable: 'KUBECONFIG')]) {
+
+                withCredentials([
+                    file(
+                        credentialsId: "${KUBECONFIG_CREDENTIALS}",
+                        variable: 'KUBECONFIG'
+                    )
+                ]) {
+
+
                     sh '''
-                        export KUBECONFIG=$KUBECONFIG
-                        
-                        # Update Helm values with new image tags
-                        helm upgrade --install ${HELM_RELEASE} ./helm/ecommerce \
-                            --namespace ${K8S_NAMESPACE} \
-                            --set backend.image.tag=${BUILD_NUMBER} \
-                            --set frontend.image.tag=${BUILD_NUMBER} \
-                            --wait --timeout 300s
-                        
-                        # Verify deployment
-                        kubectl rollout status deployment/backend -n ${K8S_NAMESPACE}
-                        kubectl rollout status deployment/frontend -n ${K8S_NAMESPACE}
+
+                    export KUBECONFIG=$KUBECONFIG
+
+
+                    helm upgrade --install ${HELM_RELEASE} ${HELM_CHART} \
+                    --namespace ${K8S_NAMESPACE} \
+                    --create-namespace \
+                    --set backend.image.repository=${DOCKER_REGISTRY}/${BACKEND_IMAGE} \
+                    --set backend.image.tag=${BUILD_NUMBER} \
+                    --set frontend.image.repository=${DOCKER_REGISTRY}/${FRONTEND_IMAGE} \
+                    --set frontend.image.tag=${BUILD_NUMBER} \
+                    --wait \
+                    --timeout 5m
+
+
                     '''
                 }
             }
         }
-        
-        stage('Post-Deploy Health Check') {
+
+
+
+
+
+        stage('Verify Deployment') {
+
             steps {
+
                 sh '''
-                    # Wait for services to be ready
-                    sleep 30
-                    
-                    # Check backend health
-                    kubectl get pods -n ${K8S_NAMESPACE} -l app=backend
-                    
-                    # Check frontend health
-                    kubectl get pods -n ${K8S_NAMESPACE} -l app=frontend
+
+                kubectl get pods -n ${K8S_NAMESPACE}
+
+                kubectl rollout status \
+                deployment/backend \
+                -n ${K8S_NAMESPACE}
+
+
+                kubectl rollout status \
+                deployment/frontend \
+                -n ${K8S_NAMESPACE}
+
+
                 '''
             }
         }
+
     }
-    
+
+
+
     post {
+
         always {
+
             sh '''
-                docker logout ${DOCKER_REGISTRY} || true
-                docker system prune -f || true
+            docker logout || true
+            docker system prune -f || true
             '''
+
             cleanWs()
         }
+
+
         success {
-            echo "Deployment successful! Build #${BUILD_NUMBER}"
+
+            echo "✅ Deployment successful Build #${BUILD_NUMBER}"
+
         }
+
+
         failure {
-            echo "Deployment failed! Rolling back..."
+
+            echo "❌ Deployment failed"
+
             sh '''
-                helm rollback ${HELM_RELEASE} 0 -n ${K8S_NAMESPACE} || true
+            helm history ${HELM_RELEASE} -n ${K8S_NAMESPACE} || true
             '''
         }
     }

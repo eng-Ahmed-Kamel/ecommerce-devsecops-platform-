@@ -14,11 +14,11 @@ images:
 
   backend:
     repository: oziii/ecommerce-backend
-    tag: k8s-v1
+    tag: latest
     pullPolicy: IfNotPresent
   frontend:
     repository: oziii/ecommerce-frontend
-    tag: k8s-v1
+    tag: latest
     pullPolicy: IfNotPresent
 
 # ============================================
@@ -67,21 +67,20 @@ frontend:
     initialDelaySeconds: 5
     periodSeconds: 5
 
+#=================================
 # ============================================
 #  Ingress - NGINX Ingress Controller
 # ============================================
-#
 ingress:
   enabled: true
-  className: nginx          
-  annotations:
-    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-  host: ""
+  className: alb
 
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /health
+
+  host: ""
 
 # ============================================
 # HPA

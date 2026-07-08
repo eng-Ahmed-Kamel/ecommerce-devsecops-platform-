@@ -234,7 +234,7 @@ prometheusOperator:
     patch:
       enabled: true
       image:
-        repository: registry.k8s.io/ingress-nginx/kube-webhook-certgen
+        repository: ingress-nginx/kube-webhook-certgen
         tag: v20231011-8b53cabe0
 
 # ThanosRuler (optional, for recording rules)
